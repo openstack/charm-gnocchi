@@ -1,0 +1,6 @@
+build/
+.local/
+.testrepository/
+.tox/
+func-results.json
+test-charm/

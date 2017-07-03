@@ -1,0 +1,11 @@
+name: gnocchi
+maintainer: example@example.com
+summary: Short summary of charm
+description: |
+  Longline summary of charm 
+tags:
+  - openstack
+series:
+  - xenial
+  - trusty
+  - yakkety
