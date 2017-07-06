@@ -4,3 +4,5 @@ build/
 .tox/
 func-results.json
 test-charm/
+.project
+.pydevproject
