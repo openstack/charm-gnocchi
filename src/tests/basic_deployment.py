@@ -27,12 +27,13 @@ u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
 
 
 class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
+
     """Amulet tests on a basic gnocchi deployment."""
 
     def __init__(self, series, openstack=None, source=None, stable=False):
         """Deploy the entire test environment."""
         super(GnocchiCharmDeployment, self).__init__(series, openstack,
-                                                       source, stable)
+                                                     source, stable)
         self._add_services()
         self._add_relations()
         self._configure_services()
@@ -58,7 +59,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'keystone'},
         ]
         super(GnocchiCharmDeployment, self)._add_services(this_service,
-                                                      other_services)
+                                                          other_services)
 
     def _add_relations(self):
         """Add all of the relations for the services."""

@@ -13,7 +13,8 @@ import charms_openstack.ip as os_ip
 GNOCCHI_DIR = '/etc/gnocchi'
 GNOCCHI_CONF = os.path.join(GNOCCHI_DIR, 'gnocchi.conf')
 GNOCCHI_APACHE_SITE = 'gnocchi-api'
-GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(GNOCCHI_APACHE_SITE)
+GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(
+    GNOCCHI_APACHE_SITE)
 
 CEPH_CONF = '/etc/ceph/ceph.conf'
 
@@ -21,6 +22,7 @@ CEPH_POOL_NAME = 'gnocchi'
 
 
 class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
+
     """
     Adapter for the CephClientRequires relation interface.
     """
@@ -41,6 +43,7 @@ class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
 
 
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
+
     """
     Adapters collection to append ceph-client adapter for Gnocchi
     """
@@ -53,6 +56,7 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
 
 class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
+
     """
     Charm for Juju deployment of Gnocchi
     """
@@ -102,7 +106,6 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         ]),
     }
 
-
     sync_cmd = ['gnocchi-upgrade']
 
     adapters_class = GnocchiCharmRelationAdapaters
@@ -129,4 +132,4 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         return [{
             'database': 'gnocchi',
             'username': 'gnocchi',
-            'hostname': hookenv.unit_private_ip() },]
+            'hostname': hookenv.unit_private_ip()}, ]
