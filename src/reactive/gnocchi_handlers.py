@@ -73,3 +73,9 @@ def configure_ceph(ceph):
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
     ceph_helper.delete_keyring(hookenv.service_name())
+
+
+@reactive.when('metric-service.connected')
+def provide_gnocchi_url(metric_service):
+    with charm.provide_charm_instance() as charm_class:
+        metric_service.set_gnocchi_url(charm_class.public_url)

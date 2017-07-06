@@ -14,6 +14,9 @@ series:
   - trusty
   - yakkety
   - zesty
+provides:
+  metric-service:
+    interface: gnocchi
 requires:
   storage-ceph:
     interface: ceph-client
