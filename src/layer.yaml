@@ -1,4 +1,4 @@
-includes: ['layer:openstack-api', 'interface:ceph-client', 'interface:gnocchi']
+includes: ['layer:openstack-api', 'interface:ceph-client', 'interface:gnocchi', 'interface:memcache']
 options:
   basic:
     use_venv: True

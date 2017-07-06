@@ -29,9 +29,9 @@ charm.use_defaults(
     'update-status')
 
 
+@reactive.when('coordinator.available')
 @reactive.when('shared-db.available')
 @reactive.when('identity-service.available')
-@reactive.when('storage-ceph.available')
 @reactive.when('storage-ceph.pools.available')
 def render_config(*args):
     """Render the configuration for charm when all the interfaces are

@@ -20,3 +20,5 @@ provides:
 requires:
   storage-ceph:
     interface: ceph-client
+  coordinator:
+    interface: memcache

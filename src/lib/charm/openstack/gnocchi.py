@@ -21,6 +21,7 @@ CEPH_CONF = '/etc/ceph/ceph.conf'
 CEPH_POOL_NAME = 'gnocchi'
 
 
+# TODO(jamespage): charms.openstack
 class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
 
     """
@@ -36,10 +37,27 @@ class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
         to access Ceph.
         """
         hosts = self.relation.mon_hosts()
-        if len(hosts) > 1:
+        if len(hosts) > 0:
             return ','.join(hosts)
         else:
             return None
+
+
+# TODO(jamespage): charms.openstack
+class MemcacheRelationAdapter(adapters.OpenStackRelationAdapter):
+
+    """
+    Adapter for the MemcacheRequires relation interface.
+    """
+
+    interface_type = 'memcache'
+
+    @property
+    def url(self):
+        hosts = self.relation.memcache_hosts()
+        if hosts:
+            return "memcached://{}:11211?timeout=5".format(hosts[0])
+        return None
 
 
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
@@ -52,6 +70,7 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
         'storage_ceph': StorageCephRelationAdapter,
         'shared_db': adapters.DatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
+        'coordinator': MemcacheRelationAdapter,
     }
 
 
@@ -86,7 +105,8 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
 
     services = ['gnocchi-metricd', 'apache2']
 
-    required_relations = ['shared-db', 'identity-service', 'storage-ceph']
+    required_relations = ['shared-db', 'identity-service',
+                          'storage-ceph', 'coordinator']
 
     restart_map = {
         GNOCCHI_CONF: services,
