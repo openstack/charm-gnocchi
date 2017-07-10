@@ -6,3 +6,4 @@ func-results.json
 test-charm/
 .project
 .pydevproject
+**/__pycache__
