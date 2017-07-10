@@ -67,19 +67,16 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         self.registered_hooks_test_helper(handlers, hook_set, defaults)
 
 
-class TestHandlerBase(test_utils.PatchHelper):
+class TestHandlers(test_utils.PatchHelper):
 
     def setUp(self):
-        super(TestHandlerBase, self).setUp()
+        super(TestHandlers, self).setUp()
         self.gnocchi_charm = mock.MagicMock()
         self.patch_object(handlers.charm, 'provide_charm_instance',
                           new=mock.MagicMock())
         self.provide_charm_instance().__enter__.return_value = \
             self.gnocchi_charm
         self.provide_charm_instance().__exit__.return_value = None
-
-
-class TestHandlers(TestHandlerBase):
 
     def test_render_stuff(self):
         handlers.render_config('arg1', 'arg2')
