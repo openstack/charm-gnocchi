@@ -117,3 +117,11 @@ class TestHandlers(test_utils.PatchHelper):
         mock_hookenv.service_name.return_value = 'gnocchi'
         handlers.storage_ceph_disconnected()
         mock_ceph_helper.delete_keyring.assert_called_once_with('gnocchi')
+
+    def test_provide_gnocchi_url(self):
+        mock_gnocchi = mock.MagicMock()
+        self.gnocchi_charm.public_url = "http://gnocchi:8041"
+        handlers.provide_gnocchi_url(mock_gnocchi)
+        mock_gnocchi.set_gnocchi_url.assert_called_once_with(
+            "http://gnocchi:8041"
+        )
