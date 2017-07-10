@@ -63,21 +63,60 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             },
         }
         # test that the hooks were registered via the
-        # reactive.barbican_handlers
+        # reactive.gnocchi_handlers
         self.registered_hooks_test_helper(handlers, hook_set, defaults)
 
 
-class TestRenderStuff(test_utils.PatchHelper):
+class TestHandlerBase(test_utils.PatchHelper):
 
-    def test_render_stuff(self):
-        gnocchi_charm = mock.MagicMock()
+    def setUp(self):
+        super(TestHandlerBase, self).setUp()
+        self.gnocchi_charm = mock.MagicMock()
         self.patch_object(handlers.charm, 'provide_charm_instance',
                           new=mock.MagicMock())
-        self.provide_charm_instance().__enter__.return_value = gnocchi_charm
+        self.provide_charm_instance().__enter__.return_value = \
+            self.gnocchi_charm
         self.provide_charm_instance().__exit__.return_value = None
+
+
+class TestHandlers(TestHandlerBase):
+
+    def test_render_stuff(self):
         handlers.render_config('arg1', 'arg2')
-        gnocchi_charm.render_with_interfaces.assert_called_once_with(
+        self.gnocchi_charm.render_with_interfaces.assert_called_once_with(
             ('arg1', 'arg2')
         )
-        gnocchi_charm.assess_status.assert_called_once_with()
-        gnocchi_charm.enable_apache2_site.assert_called_once_with()
+        self.gnocchi_charm.assess_status.assert_called_once_with()
+        self.gnocchi_charm.enable_apache2_site.assert_called_once_with()
+
+    def test_init_db(self):
+        handlers.init_db()
+        self.gnocchi_charm.db_sync.assert_called_once_with()
+
+    def test_storage_ceph_connected(self):
+        mock_ceph = mock.MagicMock()
+        handlers.storage_ceph_connected(mock_ceph)
+        mock_ceph.create_pool.assert_called_once_with(
+            handlers.gnocchi.CEPH_POOL_NAME
+        )
+
+    @mock.patch.object(handlers, 'hookenv')
+    @mock.patch.object(handlers, 'ceph_helper')
+    def test_configure_ceph(self, mock_ceph_helper, mock_hookenv):
+        mock_ceph = mock.MagicMock()
+        mock_ceph.key.return_value = 'testkey'
+        mock_hookenv.service_name.return_value = 'gnocchi'
+        handlers.configure_ceph(mock_ceph)
+        mock_ceph_helper.create_keyring.assert_called_once_with(
+            'gnocchi',
+            'testkey',
+        )
+        mock_ceph.key.assert_called_once_with()
+
+    @mock.patch.object(handlers, 'hookenv')
+    @mock.patch.object(handlers, 'ceph_helper')
+    def test_storage_ceph_disconnected(self, mock_ceph_helper,
+                                       mock_hookenv):
+        mock_hookenv.service_name.return_value = 'gnocchi'
+        handlers.storage_ceph_disconnected()
+        mock_ceph_helper.delete_keyring.assert_called_once_with('gnocchi')
