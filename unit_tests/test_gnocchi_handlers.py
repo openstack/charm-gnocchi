@@ -48,6 +48,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 ),
                 'provide_gnocchi_url': (
                     'metric-service.connected',
+                    'config.rendered',
                 ),
                 'configure_ceph': (
                     'storage-ceph.available',
