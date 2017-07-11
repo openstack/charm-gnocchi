@@ -40,7 +40,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self._deploy()
 
         u.log.info('Waiting on extended status checks...')
-        exclude_services = ['mysql', 'mongodb']
+        exclude_services = ['mysql', 'mongodb', 'memcache']
         self._auto_wait_for_status(exclude_services=exclude_services)
 
         self._initialize_tests()
@@ -55,8 +55,13 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         this_service = {'name': 'gnocchi'}
         other_services = [
             {'name': 'mysql'},
-            {'name': 'rabbitmq-server'},
+            {'name': 'mongodb'},
+            {'name': 'ceilometer'},
             {'name': 'keystone'},
+            {'name': 'rabbitmq-server'},
+            {'name': 'memcache'},
+            {'name': 'ceph-mon', 'num_units': 3},
+            {'name': 'ceph-osd', 'num_units': 3},
         ]
         super(GnocchiCharmDeployment, self)._add_services(this_service,
                                                           other_services)
@@ -65,9 +70,15 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         """Add all of the relations for the services."""
         relations = {
             'keystone:shared-db': 'mysql:shared-db',
-            'gnocchi:amqp': 'rabbitmq-server:amqp',
             'gnocchi:identity-service': 'keystone:identity-service',
             'gnocchi:shared-db': 'mysql:shared-db',
+            'gnocchi:ceph-client': 'ceph-mon:ceph-client',
+            'gnocchi:metric-service': 'ceilometer:metric-service',
+            'gnocchi:coordinator:': 'memcache:',
+            'ceilometer:identity-service': 'keystone:identity-service',
+            'ceilometer:shared-db': 'monogdb:database',
+            'ceilometer:amqp': 'rabbitmq-server:amqp',
+            'ceph-mon:osd': 'ceph-osd:mon',
         }
         super(GnocchiCharmDeployment, self)._add_relations(relations)
 
@@ -75,7 +86,11 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         """Configure all of the services."""
         keystone_config = {'admin-password': 'openstack',
                            'admin-token': 'ubuntutesting'}
-        configs = {'keystone': keystone_config}
+        ceph_osd_config = {'osd-devices': '/dev/vdb',
+                           'osd-reformat': True,
+                           'ephemeral-unmount': '/mnt'}
+        configs = {'keystone': keystone_config,
+                   'ceph-osd': ceph_osd_config}
         super(GnocchiCharmDeployment, self)._configure_services(configs)
 
     def _get_token(self):
@@ -87,8 +102,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self.gnocchi_sentry = self.d.sentry['gnocchi'][0]
         self.mysql_sentry = self.d.sentry['mysql'][0]
         self.keystone_sentry = self.d.sentry['keystone'][0]
-        self.rabbitmq_sentry = self.d.sentry['rabbitmq-server'][0]
-        self.gnocchi_svcs = ['haproxy', 'apache2 gnocchi-metricd', 'apache2']
+        self.gnocchi_svcs = ['haproxy', 'gnocchi-metricd', 'apache2']
 
         # Authenticate admin with keystone endpoint
         self.keystone = u.authenticate_keystone_admin(self.keystone_sentry,

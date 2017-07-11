@@ -14,12 +14,11 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Amulet tests on a basic SDN Charm deployment on trusty-liberty."""
+"""Amulet tests on a basic Gnocchi Charm deployment on xenial-newton."""
 
-from basic_deployment import SDNCharmDeployment
+from basic_deployment import GnocchiCharmDeployment
 
 if __name__ == '__main__':
-    deployment = SDNCharmDeployment(series='trusty',
-                                    openstack='cloud:trusty-liberty',
-                                    source='cloud:trusty-updates/liberty')
+    deployment = GnocchiCharmDeployment(series='xenial',
+                                        openstack='cloud:xenial-newton')
     deployment.run_tests()

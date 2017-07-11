@@ -14,12 +14,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Amulet tests on a basic SDN Charm deployment on trusty-mitaka."""
+"""Amulet tests on a basic Gnocchi Charm deployment on trusty-mitaka."""
 
-from basic_deployment import SDNCharmDeployment
+from basic_deployment import GnocchiCharmDeployment
 
 if __name__ == '__main__':
-    deployment = SDNCharmDeployment(series='trusty',
-                                    openstack='cloud:trusty-mitaka',
-                                    source='cloud:trusty-updates/mitaka')
+    deployment = GnocchiCharmDeployment(series='trusty',
+                                        openstack='cloud:trusty-mitaka',
+                                        source='cloud:trusty-updates/mitaka')
     deployment.run_tests()
