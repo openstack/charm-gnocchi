@@ -29,6 +29,12 @@ charm.use_defaults(
     'update-status')
 
 
+@reactive.when_not('config.rendered')
+def disable_services():
+    with charm.provide_charm_instance() as charm_class:
+        charm_class.disable_services()
+
+
 @reactive.when('coordinator.available')
 @reactive.when('shared-db.available')
 @reactive.when('identity-service.available')
@@ -40,6 +46,7 @@ def render_config(*args):
     with charm.provide_charm_instance() as charm_class:
         charm_class.render_with_interfaces(args)
         charm_class.enable_apache2_site()
+        charm_class.enable_services()
         charm_class.assess_status()
     reactive.set_state('config.rendered')
 

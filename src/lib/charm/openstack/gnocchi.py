@@ -140,7 +140,8 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         ]),
     }
 
-    sync_cmd = ['gnocchi-upgrade']
+    sync_cmd = ['gnocchi-upgrade',
+                '--log-file=/var/log/gnocchi/gnocchi-upgrade.log']
 
     adapters_class = GnocchiCharmRelationAdapaters
 
@@ -167,3 +168,13 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
             'database': 'gnocchi',
             'username': 'gnocchi',
             'hostname': hookenv.unit_private_ip()}, ]
+
+    def disable_services(self):
+        '''Disable all services related to gnocchi'''
+        for svc in self.services:
+            host.service_pause(svc)
+
+    def enable_services(self):
+        '''Enable all services related to gnocchi'''
+        for svc in self.services:
+            host.service_resume(svc)
