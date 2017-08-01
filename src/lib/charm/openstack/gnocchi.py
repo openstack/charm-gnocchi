@@ -16,6 +16,7 @@ import os
 import collections
 import subprocess
 
+import charmhelpers.contrib.network.ip as ch_ip
 import charmhelpers.core.hookenv as hookenv
 import charmhelpers.core.host as host
 
@@ -33,6 +34,8 @@ GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(
 CEPH_CONF = '/etc/ceph/ceph.conf'
 
 CEPH_POOL_NAME = 'gnocchi'
+
+DB_INTERFACE = 'shared-db'
 
 
 # TODO(jamespage): charms.openstack
@@ -167,7 +170,7 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         return [{
             'database': 'gnocchi',
             'username': 'gnocchi',
-            'hostname': hookenv.unit_private_ip()}, ]
+            'hostname': ch_ip.get_relation_ip(DB_INTERFACE)}, ]
 
     def disable_services(self):
         '''Disable all services related to gnocchi'''
