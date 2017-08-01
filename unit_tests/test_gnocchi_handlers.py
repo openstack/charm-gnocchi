@@ -61,6 +61,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'storage_ceph_disconnected': (
                     'storage-ceph.connected',
                 ),
+                'disable_services': (
+                    'config.rendered',
+                ),
             },
         }
         # test that the hooks were registered via the
