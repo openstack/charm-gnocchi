@@ -27,8 +27,9 @@ u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
 
 
 class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
-
     """Amulet tests on a basic gnocchi deployment."""
+
+    gnocchi_svcs = ['haproxy', 'gnocchi-metricd', 'apache2']
 
     def __init__(self, series, openstack=None, source=None, stable=False):
         """Deploy the entire test environment."""
@@ -59,7 +60,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'ceilometer'},
             {'name': 'keystone'},
             {'name': 'rabbitmq-server'},
-            {'name': 'memcache'},
+            {'name': 'memcached'},
             {'name': 'ceph-mon', 'num_units': 3},
             {'name': 'ceph-osd', 'num_units': 3},
         ]
@@ -74,7 +75,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             'gnocchi:shared-db': 'mysql:shared-db',
             'gnocchi:ceph-client': 'ceph-mon:ceph-client',
             'gnocchi:metric-service': 'ceilometer:metric-service',
-            'gnocchi:coordinator:': 'memcache:',
+            'gnocchi:coordinator:': 'memcached:cache',
             'ceilometer:identity-service': 'keystone:identity-service',
             'ceilometer:shared-db': 'monogdb:database',
             'ceilometer:amqp': 'rabbitmq-server:amqp',
@@ -102,7 +103,6 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self.gnocchi_sentry = self.d.sentry['gnocchi'][0]
         self.mysql_sentry = self.d.sentry['mysql'][0]
         self.keystone_sentry = self.d.sentry['keystone'][0]
-        self.gnocchi_svcs = ['haproxy', 'gnocchi-metricd', 'apache2']
 
         # Authenticate admin with keystone endpoint
         self.keystone = u.authenticate_keystone_admin(self.keystone_sentry,
