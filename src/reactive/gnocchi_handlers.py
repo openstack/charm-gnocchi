@@ -26,7 +26,8 @@ charm.use_defaults(
     'identity-service.connected',
     'identity-service.available',  # enables SSL support
     'config.changed',
-    'update-status')
+    'update-status',
+    'charm.default-select-release')
 
 
 @reactive.when_not('config.rendered')
