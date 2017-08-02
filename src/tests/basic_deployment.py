@@ -58,12 +58,14 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'percona-cluster'},
             {'name': 'mongodb'},
             # NOTE(jamespage): Drop when changes land into ceilometer/master
-            {'name': 'ceilometer', 'location': 'cs:~james-page/ceilometer'},
+            {'name': 'ceilometer',
+             'location': 'cs:~james-page/ceilometer'},
             {'name': 'keystone'},
             {'name': 'rabbitmq-server'},
-            {'name': 'memcached', 'location': 'cs:memcached'},
-            {'name': 'ceph-mon', 'num_units': 3},
-            {'name': 'ceph-osd', 'num_units': 3},
+            {'name': 'memcached',
+             'location': 'cs:memcached'},
+            {'name': 'ceph-mon', 'units': 3},
+            {'name': 'ceph-osd', 'units': 3},
         ]
         super(GnocchiCharmDeployment, self)._add_services(this_service,
                                                           other_services)
@@ -76,7 +78,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             'gnocchi:shared-db': 'percona-cluster:shared-db',
             'gnocchi:storage-ceph': 'ceph-mon:client',
             'gnocchi:metric-service': 'ceilometer:metric-service',
-            'gnocchi:coordinator': 'memcached:cache',
+            'gnocchi:coordinator-memcached': 'memcached:cache',
             'ceilometer:identity-service': 'keystone:identity-service',
             'ceilometer:shared-db': 'mongodb:database',
             'ceilometer:amqp': 'rabbitmq-server:amqp',

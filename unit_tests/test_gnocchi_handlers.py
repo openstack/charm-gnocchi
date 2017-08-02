@@ -35,7 +35,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         hook_set = {
             'when': {
                 'render_config': (
-                    'coordinator.available',
+                    'coordinator-memcached.available',
                     'shared-db.available',
                     'identity-service.available',
                     'storage-ceph.pools.available',

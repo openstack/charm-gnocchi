@@ -80,14 +80,14 @@ class MemcacheRelationAdapter(adapters.OpenStackRelationAdapter):
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
     """
-    Adapters collection to append ceph-client adapter for Gnocchi
+    Adapters collection to append specific adapters for Gnocchi
     """
 
     relation_adapters = {
         'storage_ceph': StorageCephRelationAdapter,
         'shared_db': adapters.DatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
-        'coordinator': MemcacheRelationAdapter,
+        'coordinator_memcached': MemcacheRelationAdapter,
     }
 
 

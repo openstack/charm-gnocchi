@@ -36,7 +36,7 @@ def disable_services():
         charm_class.disable_services()
 
 
-@reactive.when('coordinator.available')
+@reactive.when('coordinator-memcached.available')
 @reactive.when('shared-db.available')
 @reactive.when('identity-service.available')
 @reactive.when('storage-ceph.pools.available')
