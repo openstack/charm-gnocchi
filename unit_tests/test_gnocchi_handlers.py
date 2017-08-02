@@ -29,9 +29,10 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             'charm.installed',
             'shared-db.connected',
             'identity-service.connected',
-            'identity-service.available',  # enables SSL support
+            'identity-service.available',
             'config.changed',
-            'update-status']
+            'update-status',
+            'charm.default-select-release']
         hook_set = {
             'when': {
                 'render_config': (
