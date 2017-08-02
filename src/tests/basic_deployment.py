@@ -30,6 +30,8 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     """Amulet tests on a basic gnocchi deployment."""
 
     gnocchi_svcs = ['haproxy', 'gnocchi-metricd', 'apache2']
+    no_origin = ['memcached', 'percona-cluster', 'rabbitmq-server',
+                 'ceph-mon', 'ceph-osd']
 
     def __init__(self, series, openstack=None, source=None, stable=False):
         """Deploy the entire test environment."""
@@ -67,8 +69,11 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'ceph-mon', 'units': 3},
             {'name': 'ceph-osd', 'units': 3},
         ]
-        super(GnocchiCharmDeployment, self)._add_services(this_service,
-                                                          other_services)
+        super(GnocchiCharmDeployment, self)._add_services(
+            this_service,
+            other_services,
+            no_origin=self.no_origin
+        )
 
     def _add_relations(self):
         """Add all of the relations for the services."""
