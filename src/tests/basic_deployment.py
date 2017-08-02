@@ -41,7 +41,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self._deploy()
 
         u.log.info('Waiting on extended status checks...')
-        exclude_services = ['mysql', 'mongodb', 'memcache']
+        exclude_services = ['mysql', 'mongodb', 'memcached']
         self._auto_wait_for_status(exclude_services=exclude_services)
 
         self._initialize_tests()
@@ -55,12 +55,13 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
            """
         this_service = {'name': 'gnocchi'}
         other_services = [
-            {'name': 'mysql'},
+            {'name': 'percona-cluster'},
             {'name': 'mongodb'},
-            {'name': 'ceilometer'},
+            # NOTE(jamespage): Drop when changes land into ceilometer/master
+            {'name': 'ceilometer', 'location': 'cs:~james-page/ceilometer'},
             {'name': 'keystone'},
             {'name': 'rabbitmq-server'},
-            {'name': 'memcached'},
+            {'name': 'memcached', 'location': 'cs:memcached'},
             {'name': 'ceph-mon', 'num_units': 3},
             {'name': 'ceph-osd', 'num_units': 3},
         ]
@@ -70,14 +71,14 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     def _add_relations(self):
         """Add all of the relations for the services."""
         relations = {
-            'keystone:shared-db': 'mysql:shared-db',
+            'keystone:shared-db': 'percona-cluster:shared-db',
             'gnocchi:identity-service': 'keystone:identity-service',
-            'gnocchi:shared-db': 'mysql:shared-db',
-            'gnocchi:ceph-client': 'ceph-mon:ceph-client',
+            'gnocchi:shared-db': 'percona-cluster:shared-db',
+            'gnocchi:storage-ceph': 'ceph-mon:client',
             'gnocchi:metric-service': 'ceilometer:metric-service',
-            'gnocchi:coordinator:': 'memcached:cache',
+            'gnocchi:coordinator': 'memcached:cache',
             'ceilometer:identity-service': 'keystone:identity-service',
-            'ceilometer:shared-db': 'monogdb:database',
+            'ceilometer:shared-db': 'mongodb:database',
             'ceilometer:amqp': 'rabbitmq-server:amqp',
             'ceph-mon:osd': 'ceph-osd:mon',
         }
@@ -101,7 +102,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         """Perform final initialization before tests get run."""
         # Access the sentries for inspecting service units
         self.gnocchi_sentry = self.d.sentry['gnocchi'][0]
-        self.mysql_sentry = self.d.sentry['mysql'][0]
+        self.mysql_sentry = self.d.sentry['percona-cluster'][0]
         self.keystone_sentry = self.d.sentry['keystone'][0]
 
         # Authenticate admin with keystone endpoint
