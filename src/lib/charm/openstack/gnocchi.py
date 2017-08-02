@@ -123,7 +123,7 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
     services = ['gnocchi-metricd', 'apache2']
 
     required_relations = ['shared-db', 'identity-service',
-                          'storage-ceph', 'coordinator']
+                          'storage-ceph', 'coordinator-memcached']
 
     restart_map = {
         GNOCCHI_CONF: services,
