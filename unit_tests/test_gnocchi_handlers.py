@@ -109,9 +109,11 @@ class TestHandlers(test_utils.PatchHelper):
         mock_ceph.key.return_value = 'testkey'
         mock_hookenv.service_name.return_value = 'gnocchi'
         handlers.configure_ceph(mock_ceph)
-        mock_ceph_helper.create_keyring.assert_called_once_with(
-            'gnocchi',
-            'testkey',
+        mock_ceph_helper.ensure_ceph_keyring.assert_called_once_with(
+            service='gnocchi',
+            key='testkey',
+            user='gnocchi',
+            group='gnocchi'
         )
         mock_ceph.key.assert_called_once_with()
 

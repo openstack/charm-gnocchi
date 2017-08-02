@@ -74,8 +74,10 @@ def storage_ceph_connected(ceph):
 
 @reactive.when('storage-ceph.available')
 def configure_ceph(ceph):
-    ceph_helper.create_keyring(hookenv.service_name(),
-                               ceph.key())
+    ceph_helper.ensure_ceph_keyring(service=hookenv.service_name(),
+                                    key=ceph.key(),
+                                    user='gnocchi',
+                                    group='gnocchi')
 
 
 @reactive.when_not('storage-ceph.connected')
