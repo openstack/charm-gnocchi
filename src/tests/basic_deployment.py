@@ -22,6 +22,10 @@ import time
 import charmhelpers.contrib.openstack.amulet.deployment as amulet_deployment
 import charmhelpers.contrib.openstack.amulet.utils as os_amulet_utils
 
+from gnocchiclient.v1 import client as gnocchi_client
+from keystoneclient import session as keystone_session
+from keystoneclient.auth import identity as keystone_identity
+
 # Use DEBUG to turn on debug logging
 u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
 
@@ -118,6 +122,17 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
                                                       password='openstack',
                                                       tenant='admin')
 
+        # Authenticate admin with gnocchi endpoint
+        keystone_ep = self.keystone.service_catalog.url_for(
+            service_type='identity',
+            interface='publicURL')
+
+        auth = keystone_identity.V2Token(auth_url=keystone_ep,
+                                         token=self.keystone.auth_token)
+        sess = keystone_session.Session(auth=auth)
+        self.gnocchi = gnocchi_client.Client(session=sess)
+
+
     def check_and_wait(self, check_command, interval=2, max_wait=200,
                        desc=None):
         waited = 0
@@ -167,4 +182,10 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         if ret:
             amulet.raise_status(amulet.FAIL, msg=ret)
 
+        u.log.debug('OK')
+
+    def test_200_api_connection(self):
+        """Simple api calls to check service is up and responding"""
+        u.log.debug('Checking api functionality...')
+        assert(self.gnocchi.status() != [])
         u.log.debug('OK')
