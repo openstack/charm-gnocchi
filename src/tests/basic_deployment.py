@@ -123,6 +123,10 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
                                                       tenant='admin')
 
         # Authenticate admin with gnocchi endpoint
+        gnocchi_ep = self.keystone.service_catalog.url_for(
+            service_type='metric',
+            interface='publicURL')
+
         keystone_ep = self.keystone.service_catalog.url_for(
             service_type='identity',
             interface='publicURL')
@@ -131,7 +135,6 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
                                          token=self.keystone.auth_token)
         sess = keystone_session.Session(auth=auth)
         self.gnocchi = gnocchi_client.Client(session=sess)
-
 
     def check_and_wait(self, check_command, interval=2, max_wait=200,
                        desc=None):
@@ -187,5 +190,5 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     def test_200_api_connection(self):
         """Simple api calls to check service is up and responding"""
         u.log.debug('Checking api functionality...')
-        assert(self.gnocchi.status() != [])
+        assert(self.gnocchi.status.get() != [])
         u.log.debug('OK')
