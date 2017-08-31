@@ -12,7 +12,6 @@ tags:
 series:
   - xenial
   - trusty
-  - yakkety
   - zesty
 provides:
   metric-service:

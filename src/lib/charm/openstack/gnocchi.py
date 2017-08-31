@@ -16,8 +16,8 @@ import os
 import collections
 import subprocess
 
+import charmhelpers.contrib.openstack.utils as ch_utils
 import charmhelpers.contrib.network.ip as ch_ip
-import charmhelpers.core.hookenv as hookenv
 import charmhelpers.core.host as host
 
 import charms_openstack.charm
@@ -147,6 +147,15 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
                 '--log-file=/var/log/gnocchi/gnocchi-upgrade.log']
 
     adapters_class = GnocchiCharmRelationAdapaters
+
+    def __init__(self, release=None, **kwargs):
+        """Custom initialiser for class
+        If no release is passed, then the charm determines the release from the
+        ch_utils.os_release() function.
+        """
+        if release is None:
+            release = ch_utils.os_release('python-keystonemiddleware')
+        super(GnocchiCharm, self).__init__(release=release, **kwargs)
 
     def install(self):
         super(GnocchiCharm, self).install()

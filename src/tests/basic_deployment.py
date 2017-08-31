@@ -23,8 +23,8 @@ import charmhelpers.contrib.openstack.amulet.deployment as amulet_deployment
 import charmhelpers.contrib.openstack.amulet.utils as os_amulet_utils
 
 from gnocchiclient.v1 import client as gnocchi_client
-from keystoneclient import session as keystone_session
-from keystoneclient.auth import identity as keystone_identity
+from keystoneauth1 import session as keystone_session
+from keystoneauth1 import identity as keystone_identity
 
 # Use DEBUG to turn on debug logging
 u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
@@ -63,13 +63,10 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         other_services = [
             {'name': 'percona-cluster'},
             {'name': 'mongodb'},
-            # NOTE(jamespage): Drop when changes land into ceilometer/master
-            {'name': 'ceilometer',
-             'location': 'cs:~james-page/ceilometer'},
+            {'name': 'ceilometer'},
             {'name': 'keystone'},
             {'name': 'rabbitmq-server'},
-            {'name': 'memcached',
-             'location': 'cs:memcached'},
+            {'name': 'memcached', 'location': 'cs:memcached'},
             {'name': 'ceph-mon', 'units': 3},
             {'name': 'ceph-osd', 'units': 3},
         ]
@@ -131,10 +128,13 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             service_type='identity',
             interface='publicURL')
 
-        auth = keystone_identity.V2Token(auth_url=keystone_ep,
-                                         token=self.keystone.auth_token)
+        auth = keystone_identity.V2Password(auth_url=keystone_ep,
+                                            username='admin',
+                                            password='openstack',
+                                            tenant_name='admin')
         sess = keystone_session.Session(auth=auth)
-        self.gnocchi = gnocchi_client.Client(session=sess)
+        self.gnocchi = gnocchi_client.Client(session=sess,
+                                             endpoint_override=gnocchi_ep)
 
     def check_and_wait(self, check_command, interval=2, max_wait=200,
                        desc=None):

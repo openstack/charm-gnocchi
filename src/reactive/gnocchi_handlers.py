@@ -26,20 +26,21 @@ charm.use_defaults(
     'identity-service.connected',
     'identity-service.available',  # enables SSL support
     'config.changed',
-    'update-status',
-    'charm.default-select-release')
+    'update-status')
+
+required_interfaces = ['coordinator-memcached.available',
+                       'shared-db.available',
+                       'identity-service.available',
+                       'storage-ceph.pools.available']
 
 
-@reactive.when_not('config.rendered')
+@reactive.when_not_all(*required_interfaces)
 def disable_services():
     with charm.provide_charm_instance() as charm_class:
         charm_class.disable_services()
 
 
-@reactive.when('coordinator-memcached.available')
-@reactive.when('shared-db.available')
-@reactive.when('identity-service.available')
-@reactive.when('storage-ceph.pools.available')
+@reactive.when(*required_interfaces)
 def render_config(*args):
     """Render the configuration for charm when all the interfaces are
     available.
