@@ -1,6 +1,7 @@
 build/
 .local/
 .testrepository/
+.stestr/
 .tox/
 func-results.json
 test-charm/

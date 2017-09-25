@@ -33,8 +33,6 @@ GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(
 
 CEPH_CONF = '/etc/ceph/ceph.conf'
 
-CEPH_POOL_NAME = 'gnocchi'
-
 DB_INTERFACE = 'shared-db'
 
 

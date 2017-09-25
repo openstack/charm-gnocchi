@@ -70,7 +70,7 @@ def cluster_connected(hacluster):
 
 @reactive.when('storage-ceph.connected')
 def storage_ceph_connected(ceph):
-    ceph.create_pool(gnocchi.CEPH_POOL_NAME)
+    ceph.create_pool(hookenv.service_name())
 
 
 @reactive.when('storage-ceph.available')
