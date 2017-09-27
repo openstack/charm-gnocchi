@@ -37,10 +37,12 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     no_origin = ['memcached', 'percona-cluster', 'rabbitmq-server',
                  'ceph-mon', 'ceph-osd']
 
-    def __init__(self, series, openstack=None, source=None, stable=False):
+    def __init__(self, series, openstack=None, source=None, stable=False,
+                 snap_source=None):
         """Deploy the entire test environment."""
         super(GnocchiCharmDeployment, self).__init__(series, openstack,
                                                      source, stable)
+        self.snap_source = snap_source
         self._add_services()
         self._add_relations()
         self._configure_services()
@@ -99,8 +101,12 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         ceph_osd_config = {'osd-devices': '/dev/vdb',
                            'osd-reformat': 'yes',
                            'ephemeral-unmount': '/mnt'}
+        gnocchi_config = {}
+        if self.snap_source:
+            gnocchi_config['openstack-origin'] = self.snap_source
         configs = {'keystone': keystone_config,
-                   'ceph-osd': ceph_osd_config}
+                   'ceph-osd': ceph_osd_config,
+                   'gnocchi': gnocchi_config}
         super(GnocchiCharmDeployment, self)._configure_services(configs)
 
     def _get_token(self):
@@ -192,3 +198,11 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         u.log.debug('Checking api functionality...')
         assert(self.gnocchi.status.get() != [])
         u.log.debug('OK')
+
+
+class GnocchiCharmSnapDeployment(GnocchiCharmDeployment):
+    """Amulet tests on a snap based gnocchi deployment."""
+
+    gnocchi_svcs = ['haproxy', 'snap.gnocchi.metricd',
+                    'snap.gnocchi.uwsgi',
+                    'snap.gnocchi.nginx']

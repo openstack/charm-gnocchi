@@ -77,6 +77,8 @@ class TestHandlers(test_utils.PatchHelper):
     def setUp(self):
         super(TestHandlers, self).setUp()
         self.gnocchi_charm = mock.MagicMock()
+        self.gnocchi_charm.gnocchi_user = 'gnocchi'
+        self.gnocchi_charm.gnocchi_group = 'gnocchi'
         self.patch_object(handlers.charm, 'provide_charm_instance',
                           new=mock.MagicMock())
         self.provide_charm_instance().__enter__.return_value = \
@@ -89,7 +91,7 @@ class TestHandlers(test_utils.PatchHelper):
             ('arg1', 'arg2')
         )
         self.gnocchi_charm.assess_status.assert_called_once_with()
-        self.gnocchi_charm.enable_apache2_site.assert_called_once_with()
+        self.gnocchi_charm.enable_webserver_site.assert_called_once_with()
 
     def test_init_db(self):
         handlers.init_db()

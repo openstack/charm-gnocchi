@@ -12,6 +12,8 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import os
+
 import charms_openstack.charm as charm
 import charms.reactive as reactive
 
@@ -19,6 +21,7 @@ import charm.openstack.gnocchi as gnocchi  # noqa
 
 import charmhelpers.contrib.storage.linux.ceph as ceph_helper
 import charmhelpers.core.hookenv as hookenv
+import charmhelpers.core.host as host
 
 charm.use_defaults(
     'charm.installed',
@@ -48,7 +51,7 @@ def render_config(*args):
     with charm.provide_charm_instance() as charm_class:
         charm_class.enable_services()
         charm_class.render_with_interfaces(args)
-        charm_class.enable_apache2_site()
+        charm_class.enable_webserver_site()
         charm_class.assess_status()
     reactive.set_state('config.rendered')
 
@@ -75,15 +78,22 @@ def storage_ceph_connected(ceph):
 
 @reactive.when('storage-ceph.available')
 def configure_ceph(ceph):
-    ceph_helper.ensure_ceph_keyring(service=hookenv.service_name(),
-                                    key=ceph.key(),
-                                    user='gnocchi',
-                                    group='gnocchi')
+    with charm.provide_charm_instance() as charm_class:
+        # TODO(jamespage): refactor to avoid massaging helper
+        ceph_helper.KEYRING = charm_class.ceph_keyring
+        host.mkdir(os.path.dirname(charm_class.ceph_keyring))
+        ceph_helper.ensure_ceph_keyring(service=hookenv.service_name(),
+                                        key=ceph.key(),
+                                        user=charm_class.gnocchi_user,
+                                        group=charm_class.gnocchi_group)
 
 
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
-    ceph_helper.delete_keyring(hookenv.service_name())
+    with charm.provide_charm_instance() as charm_class:
+        # TODO(jamespage): refactor to avoid massaging helper
+        ceph_helper.KEYRING = charm_class.ceph_keyring
+        ceph_helper.delete_keyring(hookenv.service_name())
 
 
 @reactive.when('metric-service.connected')

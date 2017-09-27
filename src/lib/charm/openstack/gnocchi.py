@@ -27,13 +27,51 @@ import charms_openstack.ip as os_ip
 
 GNOCCHI_DIR = '/etc/gnocchi'
 GNOCCHI_CONF = os.path.join(GNOCCHI_DIR, 'gnocchi.conf')
-GNOCCHI_APACHE_SITE = 'gnocchi-api'
+GNOCCHI_WEBSERVER_SITE = 'gnocchi-api'
 GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(
-    GNOCCHI_APACHE_SITE)
+    GNOCCHI_WEBSERVER_SITE)
+
+SNAP_PREFIX = '/var/snap/gnocchi/common'
+
+GNOCCHI_DIR_SNAP = '{}{}'.format(SNAP_PREFIX, GNOCCHI_DIR)
+GNOCCHI_CONF_SNAP = os.path.join(GNOCCHI_DIR_SNAP, 'gnocchi.conf')
+GNOCCHI_WEBSERVER_SITE_SNAP = 'gnocchi-nginx'
+GNOCCHI_NGINX_SITE_CONF_SNAP = '{}{}'.format(
+    SNAP_PREFIX,
+    '/etc/nginx/sites-enabled/{}.conf'.format(
+        GNOCCHI_WEBSERVER_SITE_SNAP
+    )
+)
+GNOCCHI_NGINX_CONF_SNAP = '{}{}'.format(SNAP_PREFIX,
+                                        '/etc/nginx/nginx.conf')
 
 CEPH_CONF = '/etc/ceph/ceph.conf'
+CEPH_CONF_SNAP = '{}{}'.format(SNAP_PREFIX, CEPH_CONF)
+
+CEPH_KEYRING = '/etc/ceph/ceph.client.{}.keyring'
+CEPH_KEYRING_SNAP = '{}{}'.format(SNAP_PREFIX, CEPH_KEYRING)
 
 DB_INTERFACE = 'shared-db'
+
+charms_openstack.charm.use_defaults('charm.default-select-package-type')
+charms_openstack.charm.use_defaults('charm.default-select-release')
+
+
+@charms_openstack.adapters.config_property
+def log_config(config):
+    if ch_utils.snap_install_requested():
+        return os.path.join(SNAP_PREFIX,
+                            'log/gnocchi-api.log')
+    else:
+        return '/var/log/gnocchi/gnocchi-api.log'
+
+
+@charms_openstack.adapters.config_property
+def ceph_config(config):
+    if ch_utils.snap_install_requested():
+        return CEPH_CONF_SNAP
+    else:
+        return CEPH_CONF
 
 
 # TODO(jamespage): charms.openstack
@@ -51,7 +89,7 @@ class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
         Comma separated list of hosts that should be used
         to access Ceph.
         """
-        hosts = self.relation.mon_hosts()
+        hosts = sorted(self.relation.mon_hosts())
         if len(hosts) > 0:
             return ','.join(hosts)
         else:
@@ -69,7 +107,7 @@ class MemcacheRelationAdapter(adapters.OpenStackRelationAdapter):
 
     @property
     def url(self):
-        hosts = self.relation.memcache_hosts()
+        hosts = sorted(self.relation.memcache_hosts())
         if hosts:
             return "memcached://{}:11211?timeout=5".format(hosts[0])
         return None
@@ -89,22 +127,19 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
     }
 
 
-class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
+class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm):
 
     """
-    Charm for Juju deployment of Gnocchi
+    Base class for shared charm functions for all package types
     """
+    abstract_class = True
 
     # Internal name of charm
     service_name = name = 'gnocchi'
 
-    # First release supported
-    release = 'mitaka'
+    default_service = 'gnocchi-api'
 
-    # List of packages to install for this charm
-    packages = ['gnocchi-api', 'gnocchi-metricd', 'python-apt',
-                'ceph-common', 'python-rados', 'python-keystonemiddleware',
-                'apache2', 'libapache2-mod-wsgi']
+    service_type = 'gnocchi'
 
     api_ports = {
         'gnocchi-api': {
@@ -114,64 +149,16 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         }
     }
 
-    default_service = 'gnocchi-api'
-
-    service_type = 'gnocchi'
-
-    services = ['gnocchi-metricd', 'apache2']
-
     required_relations = ['shared-db', 'identity-service',
                           'storage-ceph', 'coordinator-memcached']
 
-    restart_map = {
-        GNOCCHI_CONF: services,
-        GNOCCHI_WSGI_CONF: ['apache2'],
-        CEPH_CONF: services,
-    }
-
     ha_resources = ['vips', 'haproxy']
-
-    release_pkg = 'gnocchi-common'
-
-    package_codenames = {
-        'gnocchi-common': collections.OrderedDict([
-            ('2', 'mitaka'),
-            ('3', 'newton'),
-            ('4', 'pike'),
-        ]),
-    }
-
-    sync_cmd = ['gnocchi-upgrade',
-                '--log-file=/var/log/gnocchi/gnocchi-upgrade.log']
 
     adapters_class = GnocchiCharmRelationAdapaters
 
-    def __init__(self, release=None, **kwargs):
-        """Custom initialiser for class
-        If no release is passed, then the charm determines the release from the
-        ch_utils.os_release() function.
-        """
-        if release is None:
-            release = ch_utils.os_release('python-keystonemiddleware')
-        super(GnocchiCharm, self).__init__(release=release, **kwargs)
-
-    def install(self):
-        super(GnocchiCharm, self).install()
-        # NOTE(jamespage): always pause gnocchi-api service as we force
-        #                  execution with Apache2+mod_wsgi
-        host.service_pause('gnocchi-api')
-
-    def enable_apache2_site(self):
-        """Enable Gnocchi API apache2 site if rendered or installed"""
-        if os.path.exists(GNOCCHI_WSGI_CONF):
-            check_enabled = subprocess.call(
-                ['a2query', '-s', GNOCCHI_APACHE_SITE]
-            )
-            if check_enabled != 0:
-                subprocess.check_call(['a2ensite',
-                                       GNOCCHI_APACHE_SITE])
-                host.service_reload('apache2',
-                                    restart_on_failure=True)
+    def enable_webserver_site(self):
+        """Enable Gnocchi Webserver sites if rendered or installed"""
+        pass
 
     def get_database_setup(self):
         return [{
@@ -188,3 +175,143 @@ class GnocchiCharm(charms_openstack.charm.HAOpenStackCharm):
         '''Enable all services related to gnocchi'''
         for svc in self.services:
             host.service_resume(svc)
+
+    @property
+    def gnocchi_user(self):
+        '''Determine user gnocchi processes will run as
+
+        :return string: user for gnocchi processes
+        '''
+        return self.user
+
+    @property
+    def gnocchi_group(self):
+        '''Determine group gnocchi processes will run as
+
+        :return string: group for gnocchi processes
+        '''
+        return self.group
+
+    @property
+    def ceph_keyring(self):
+        '''Determine location for ceph keyring file
+
+        :return string: location of keyrings
+        '''
+        _type_map = {
+            'snap': CEPH_KEYRING_SNAP,
+            'deb': CEPH_KEYRING,
+        }
+        try:
+            return _type_map[self.package_type]
+        except KeyError:
+            return CEPH_KEYRING
+
+
+class GnocchiCharm(GnochiCharmBase):
+
+    """
+    Charm for Juju deployment of Gnocchi
+    """
+
+    # First release supported
+    release = 'mitaka'
+
+    # Deb package type
+    package_type = 'deb'
+
+    # List of packages to install for this charm
+    packages = ['gnocchi-api', 'gnocchi-metricd', 'python-apt',
+                'ceph-common', 'python-rados', 'python-keystonemiddleware',
+                'apache2', 'libapache2-mod-wsgi']
+
+    services = ['gnocchi-metricd', 'apache2']
+
+    restart_map = {
+        GNOCCHI_CONF: services,
+        GNOCCHI_WSGI_CONF: ['apache2'],
+        CEPH_CONF: services,
+    }
+
+    release_pkg = 'gnocchi-common'
+
+    package_codenames = {
+        'gnocchi-common': collections.OrderedDict([
+            ('2', 'mitaka'),
+            ('3', 'newton'),
+            ('4', 'pike'),
+        ]),
+    }
+
+    sync_cmd = ['gnocchi-upgrade',
+                '--log-file=/var/log/gnocchi/gnocchi-upgrade.log']
+
+    # User and group for permissions management
+    user = 'gnocchi'
+    group = 'gnocchi'
+
+    def install(self):
+        super(GnocchiCharm, self).install()
+        # NOTE(jamespage): always pause gnocchi-api service as we force
+        #                  execution with Apache2+mod_wsgi
+        host.service_pause('gnocchi-api')
+
+    def enable_webserver_site(self):
+        """Enable Gnocchi API apache2 site if rendered or installed"""
+        if os.path.exists(GNOCCHI_WSGI_CONF):
+            check_enabled = subprocess.call(
+                ['a2query', '-s', GNOCCHI_WEBSERVER_SITE]
+            )
+            if check_enabled != 0:
+                subprocess.check_call(['a2ensite',
+                                       GNOCCHI_WEBSERVER_SITE])
+                host.service_reload('apache2',
+                                    restart_on_failure=True)
+
+
+class GnocchiSnapCharm(GnochiCharmBase):
+
+    """
+    Charm for Juju deployment of Gnocchi via Snap
+    """
+
+    # First release supported
+    # NOTE(coreycb): snap install is only supported from ocata up.
+    release = 'ocata'
+
+    # Snap package type
+    package_type = 'snap'
+
+    # List of packages and snaps to install for this charm
+    snaps = ['gnocchi']
+    packages = ['ceph-common']
+
+    services = ['snap.gnocchi.metricd',
+                'snap.gnocchi.nginx',
+                'snap.gnocchi.uwsgi']
+
+    snap_codenames = {
+        'gnocchi': collections.OrderedDict([
+            ('2', 'mitaka'),
+            ('3', 'newton'),
+            ('4', 'pike'),
+        ]),
+    }
+
+    release_snap = 'gnocchi'
+
+    restart_map = {
+        GNOCCHI_CONF_SNAP: ['snap.gnocchi.metricd', 'snap.gnocchi.uwsgi'],
+        GNOCCHI_NGINX_SITE_CONF_SNAP: ['snap.gnocchi.nginx'],
+        GNOCCHI_NGINX_CONF_SNAP: ['snap.gnocchi.nginx'],
+        CEPH_CONF_SNAP: ['snap.gnocchi.metricd', 'snap.gnocchi.uwsgi'],
+    }
+
+    sync_cmd = [
+        '/snap/bin/gnocchi.upgrade',
+        '--log-file=/var/snap/gnocchi/common/log/gnocchi-upgrade.log'
+    ]
+
+    # User and group for permissions management
+    user = 'root'
+    group = 'root'
