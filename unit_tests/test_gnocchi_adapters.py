@@ -30,8 +30,6 @@ class TestAdapters(test_utils.PatchHelper):
         '1.2.3.6:123',
     ]
 
-    _memcache = ['1.2.3.4', '1.2.3.5']
-
     def test_storage_ceph(self):
         adapter = gnocchi.StorageCephRelationAdapter()
         adapter.relation = mock.MagicMock()
@@ -40,12 +38,3 @@ class TestAdapters(test_utils.PatchHelper):
                          ','.join(self._mons))
         adapter.relation.mon_hosts.return_value = []
         self.assertEqual(adapter.monitors, None)
-
-    def test_memcache(self):
-        adapter = gnocchi.MemcacheRelationAdapter()
-        adapter.relation = mock.MagicMock()
-        adapter.relation.memcache_hosts.return_value = self._memcache
-        self.assertEqual(adapter.url,
-                         "memcached://1.2.3.4:11211?timeout=5")
-        adapter.relation.memcache_hosts.return_value = []
-        self.assertEqual(adapter.url, None)

@@ -96,23 +96,6 @@ class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
             return None
 
 
-# TODO(jamespage): charms.openstack
-class MemcacheRelationAdapter(adapters.OpenStackRelationAdapter):
-
-    """
-    Adapter for the MemcacheRequires relation interface.
-    """
-
-    interface_type = 'memcache'
-
-    @property
-    def url(self):
-        hosts = sorted(self.relation.memcache_hosts())
-        if hosts:
-            return "memcached://{}:11211?timeout=5".format(hosts[0])
-        return None
-
-
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
     """
@@ -123,7 +106,7 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
         'storage_ceph': StorageCephRelationAdapter,
         'shared_db': adapters.DatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
-        'coordinator_memcached': MemcacheRelationAdapter,
+        'coordinator_memcached': adapters.MemcacheRelationAdapter,
     }
 
 
