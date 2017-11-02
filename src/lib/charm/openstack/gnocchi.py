@@ -221,8 +221,7 @@ class GnocchiCharm(GnochiCharmBase):
     package_codenames = {
         'gnocchi-common': collections.OrderedDict([
             ('2', 'mitaka'),
-            ('3', 'newton'),
-            ('4', 'pike'),
+            ('3', 'pike'),
         ]),
     }
 
@@ -275,8 +274,7 @@ class GnocchiSnapCharm(GnochiCharmBase):
 
     snap_codenames = {
         'gnocchi': collections.OrderedDict([
-            ('2', 'mitaka'),
-            ('3', 'newton'),
+            ('3', 'ocata'),
             ('4', 'pike'),
         ]),
     }
