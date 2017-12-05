@@ -11,9 +11,9 @@ tags:
   - openstack
 series:
   - xenial
+  - bionic
   - artful
   - trusty
-  - zesty
 provides:
   metric-service:
     interface: gnocchi

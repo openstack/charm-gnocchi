@@ -14,11 +14,10 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-"""Amulet tests on a basic Gnocchi Charm deployment on xenial-newton."""
+"""Amulet tests on a basic Gnocchi Charm deployment on bionic-queens."""
 
 from basic_deployment import GnocchiCharmDeployment
 
 if __name__ == '__main__':
-    deployment = GnocchiCharmDeployment(series='xenial',
-                                        openstack='cloud:xenial-newton')
+    deployment = GnocchiCharmDeployment(series='bionic')
     deployment.run_tests()
