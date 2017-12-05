@@ -222,6 +222,7 @@ class GnocchiCharm(GnochiCharmBase):
         'gnocchi-common': collections.OrderedDict([
             ('2', 'mitaka'),
             ('3', 'pike'),
+            ('4', 'queens'),
         ]),
     }
 
@@ -249,6 +250,19 @@ class GnocchiCharm(GnochiCharmBase):
                                        GNOCCHI_WEBSERVER_SITE])
                 host.service_reload('apache2',
                                     restart_on_failure=True)
+
+
+class GnocchiQueensCharm(GnocchiCharm):
+
+    """
+    Charm for deployment of Gnocchi >= Queens
+    """
+
+    release = 'queens'
+
+    packages = ['gnocchi-api', 'gnocchi-metricd', 'python3-apt',
+                'ceph-common', 'python3-rados', 'python3-keystonemiddleware',
+                'python3-memcache']
 
 
 class GnocchiSnapCharm(GnochiCharmBase):
