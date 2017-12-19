@@ -135,7 +135,7 @@ class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm):
     required_relations = ['shared-db', 'identity-service',
                           'storage-ceph', 'coordinator-memcached']
 
-    ha_resources = ['vips', 'haproxy']
+    ha_resources = ['vips', 'haproxy', 'dnsha']
 
     adapters_class = GnocchiCharmRelationAdapaters
 
