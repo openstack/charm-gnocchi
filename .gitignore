@@ -8,3 +8,5 @@ test-charm/
 .project
 .pydevproject
 **/__pycache__
+interfaces
+layers

@@ -54,17 +54,22 @@ def render_config(*args):
         charm_class.render_with_interfaces(args)
         charm_class.enable_webserver_site()
         charm_class.assess_status()
+    hookenv.log("Configuration rendered", hookenv.DEBUG)
     reactive.set_state('config.rendered')
 
 
 # db_sync checks if sync has been done so rerunning is a noop
 @reactive.when('config.rendered')
+@reactive.when_not('db.synced')
 def init_db():
     with charm.provide_charm_instance() as charm_class:
         charm_class.db_sync()
+    hookenv.log("Database synced", hookenv.DEBUG)
+    reactive.set_state('db.synced')
 
 
 @reactive.when('ha.connected')
+@reactive.when_not('ha.available')
 def cluster_connected(hacluster):
     """Configure HA resources in corosync"""
     with charm.provide_charm_instance() as charm_class:
@@ -99,6 +104,19 @@ def storage_ceph_disconnected():
 
 @reactive.when('metric-service.connected')
 @reactive.when('config.rendered')
+@reactive.when('db.synced')
 def provide_gnocchi_url(metric_service):
+    # Reactive endpoints are only fully functional in their respective relation
+    # hooks. So we cannot rely on ha.is_clustered() which would return
+    # False when not in a relation hook. Use flags instead.
+    # Check if the optional relation, ha is connected. If it is,
+    # check if it is available.
+    if (reactive.flags.is_flag_set('ha.connected') and
+            not reactive.flags.is_flag_set('ha.available')):
+        hookenv.log("Hacluster is related but not yet clustered",
+                    hookenv.DEBUG)
+        return
     with charm.provide_charm_instance() as charm_class:
+        hookenv.log("Providing gnocchi URL: {}"
+                    .format(charm_class.public_url), hookenv.DEBUG)
         metric_service.set_gnocchi_url(charm_class.public_url)

@@ -28,6 +28,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
         defaults = [
             'charm.installed',
             'shared-db.connected',
+            'ha.connected',
             'identity-service.connected',
             'identity-service.available',
             'config.changed',
@@ -50,6 +51,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'provide_gnocchi_url': (
                     'metric-service.connected',
                     'config.rendered',
+                    'db.synced',
                 ),
                 'configure_ceph': (
                     'storage-ceph.available',
@@ -64,6 +66,12 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 ),
                 'disable_services': (
                     'config.rendered',
+                ),
+                'cluster_connected': (
+                    'ha.available',
+                ),
+                'init_db': (
+                    'db.synced',
                 ),
             },
         }
@@ -129,7 +137,26 @@ class TestHandlers(test_utils.PatchHelper):
         handlers.storage_ceph_disconnected()
         mock_ceph_helper.delete_keyring.assert_called_once_with('gnocchi')
 
-    def test_provide_gnocchi_url(self):
+    @mock.patch.object(handlers.reactive.flags, 'is_flag_set')
+    def test_provide_gnocchi_url(self, mock_is_flag_set):
+        mock_is_flag_set.return_value = False
+        mock_gnocchi = mock.MagicMock()
+        self.gnocchi_charm.public_url = "http://gnocchi:8041"
+        handlers.provide_gnocchi_url(mock_gnocchi)
+        mock_gnocchi.set_gnocchi_url.assert_called_once_with(
+            "http://gnocchi:8041"
+        )
+
+    @mock.patch.object(handlers.reactive.flags, 'is_flag_set')
+    def test_provide_gnocchi_url_ha_connected(self, mock_is_flag_set):
+        mock_is_flag_set.side_effect = [True, False]
+        mock_gnocchi = mock.MagicMock()
+        handlers.provide_gnocchi_url(mock_gnocchi)
+        mock_gnocchi.set_gnocchi_url.assert_not_called()
+
+    @mock.patch.object(handlers.reactive.flags, 'is_flag_set')
+    def test_provide_gnocchi_url_ha_available(self, mock_is_flag_set):
+        mock_is_flag_set.side_effect = [True, True]
         mock_gnocchi = mock.MagicMock()
         self.gnocchi_charm.public_url = "http://gnocchi:8041"
         handlers.provide_gnocchi_url(mock_gnocchi)
