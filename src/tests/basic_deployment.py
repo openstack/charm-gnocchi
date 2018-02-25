@@ -23,8 +23,6 @@ import charmhelpers.contrib.openstack.amulet.deployment as amulet_deployment
 import charmhelpers.contrib.openstack.amulet.utils as os_amulet_utils
 
 from gnocchiclient.v1 import client as gnocchi_client
-from keystoneauth1 import session as keystone_session
-from keystoneauth1 import identity as keystone_identity
 
 # Use DEBUG to turn on debug logging
 u = os_amulet_utils.OpenStackAmuletUtils(os_amulet_utils.DEBUG)
@@ -87,11 +85,16 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             'gnocchi:storage-ceph': 'ceph-mon:client',
             'gnocchi:metric-service': 'ceilometer:metric-service',
             'gnocchi:coordinator-memcached': 'memcached:cache',
-            'ceilometer:identity-service': 'keystone:identity-service',
             'ceilometer:shared-db': 'mongodb:database',
             'ceilometer:amqp': 'rabbitmq-server:amqp',
             'ceph-mon:osd': 'ceph-osd:mon',
         }
+        if self._get_openstack_release() >= self.xenial_queens:
+            relations['ceilometer:identity-credentials'] = \
+                'keystone:identity-credentials'
+        else:
+            relations['ceilometer:identity-service'] = \
+                'keystone:identity-service'
         super(GnocchiCharmDeployment, self)._add_relations(relations)
 
     def _configure_services(self):
@@ -120,26 +123,16 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self.keystone_sentry = self.d.sentry['keystone'][0]
 
         # Authenticate admin with keystone endpoint
-        self.keystone = u.authenticate_keystone_admin(self.keystone_sentry,
-                                                      user='admin',
-                                                      password='openstack',
-                                                      tenant='admin')
+        self.keystone_session, self.keystone = u.get_default_keystone_session(
+            self.keystone_sentry,
+            openstack_release=self._get_openstack_release())
 
         # Authenticate admin with gnocchi endpoint
         gnocchi_ep = self.keystone.service_catalog.url_for(
             service_type='metric',
             interface='publicURL')
 
-        keystone_ep = self.keystone.service_catalog.url_for(
-            service_type='identity',
-            interface='publicURL')
-
-        auth = keystone_identity.V2Password(auth_url=keystone_ep,
-                                            username='admin',
-                                            password='openstack',
-                                            tenant_name='admin')
-        sess = keystone_session.Session(auth=auth)
-        self.gnocchi = gnocchi_client.Client(session=sess,
+        self.gnocchi = gnocchi_client.Client(session=self.keystone_session,
                                              endpoint_override=gnocchi_ep)
 
     def check_and_wait(self, check_command, interval=2, max_wait=200,
