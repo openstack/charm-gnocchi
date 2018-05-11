@@ -102,7 +102,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         keystone_config = {'admin-password': 'openstack',
                            'admin-token': 'ubuntutesting'}
         ceph_osd_config = {'osd-devices': '/dev/vdb',
-                           'osd-reformat': 'yes',
+                           'osd-reformat': True,
                            'ephemeral-unmount': '/mnt'}
         gnocchi_config = {}
         if self.snap_source:
