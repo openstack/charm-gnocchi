@@ -62,7 +62,6 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         this_service = {'name': 'gnocchi'}
         other_services = [
             {'name': 'percona-cluster'},
-            {'name': 'mongodb'},
             {'name': 'ceilometer'},
             {'name': 'keystone'},
             {'name': 'rabbitmq-server'},
@@ -70,6 +69,10 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'ceph-mon', 'units': 3},
             {'name': 'ceph-osd', 'units': 3},
         ]
+
+        if self._get_openstack_release() < self.xenial_queens:
+            other_services.append({'name': 'mongodb'})
+
         super(GnocchiCharmDeployment, self)._add_services(
             this_service,
             other_services,
@@ -85,7 +88,6 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             'gnocchi:storage-ceph': 'ceph-mon:client',
             'gnocchi:metric-service': 'ceilometer:metric-service',
             'gnocchi:coordinator-memcached': 'memcached:cache',
-            'ceilometer:shared-db': 'mongodb:database',
             'ceilometer:amqp': 'rabbitmq-server:amqp',
             'ceph-mon:osd': 'ceph-osd:mon',
         }
@@ -95,6 +97,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         else:
             relations['ceilometer:identity-service'] = \
                 'keystone:identity-service'
+            relations['ceilometer:shared-db'] = 'mongodb:database'
         super(GnocchiCharmDeployment, self)._add_relations(relations)
 
     def _configure_services(self):
