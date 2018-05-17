@@ -7,6 +7,7 @@ func-results.json
 test-charm/
 .project
 .pydevproject
+*.pyc
 **/__pycache__
 interfaces
 layers

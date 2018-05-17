@@ -114,9 +114,10 @@ class TestHandlers(test_utils.PatchHelper):
             'mygnocchi',
         )
 
+    @mock.patch.object(handlers, 'os')
     @mock.patch.object(handlers, 'hookenv')
     @mock.patch.object(handlers, 'ceph_helper')
-    def test_configure_ceph(self, mock_ceph_helper, mock_hookenv):
+    def test_configure_ceph(self, mock_ceph_helper, mock_hookenv, mock_os):
         mock_ceph = mock.MagicMock()
         mock_ceph.key.return_value = 'testkey'
         mock_hookenv.service_name.return_value = 'gnocchi'

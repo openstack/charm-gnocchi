@@ -24,6 +24,10 @@ charms_openstack.test_mocks.mock_charmhelpers()
 
 def mock_more_stuff():
     charmhelpers = charms_openstack.test_mocks.charmhelpers
+    sys.modules['charmhelpers.core.hookenv.charm_dir'] = (
+        charmhelpers.core.hookenv.charm_dir
+    )
+    charmhelpers.core.hookenv.charm_dir.return_value = "/tmp"
     sys.modules['charmhelpers.contrib.storage'] = (
         charmhelpers.contrib.storage
     )
