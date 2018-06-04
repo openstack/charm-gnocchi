@@ -67,7 +67,8 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             {'name': 'rabbitmq-server'},
             {'name': 'memcached', 'location': 'cs:memcached'},
             {'name': 'ceph-mon', 'units': 3},
-            {'name': 'ceph-osd', 'units': 3},
+            {'name': 'ceph-osd', 'units': 3,
+             'storage': {'osd-devices': 'cinder,10G'}},
         ]
 
         if self._get_openstack_release() < self.xenial_queens:
@@ -104,14 +105,10 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         """Configure all of the services."""
         keystone_config = {'admin-password': 'openstack',
                            'admin-token': 'ubuntutesting'}
-        ceph_osd_config = {'osd-devices': '/dev/vdb',
-                           'osd-reformat': True,
-                           'ephemeral-unmount': '/mnt'}
         gnocchi_config = {}
         if self.snap_source:
             gnocchi_config['openstack-origin'] = self.snap_source
         configs = {'keystone': keystone_config,
-                   'ceph-osd': ceph_osd_config,
                    'gnocchi': gnocchi_config}
         super(GnocchiCharmDeployment, self)._configure_services(configs)
 
