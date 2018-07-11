@@ -12,7 +12,7 @@ tags:
 series:
   - xenial
   - bionic
-  - artful
+  - cosmic
 provides:
   metric-service:
     interface: gnocchi
