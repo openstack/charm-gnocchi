@@ -27,6 +27,7 @@ import charms_openstack.ip as os_ip
 
 GNOCCHI_DIR = '/etc/gnocchi'
 GNOCCHI_CONF = os.path.join(GNOCCHI_DIR, 'gnocchi.conf')
+GNOCCHI_API_PASTE = os.path.join(GNOCCHI_DIR, 'api-paste.ini')
 GNOCCHI_WEBSERVER_SITE = 'gnocchi-api'
 GNOCCHI_WSGI_CONF = '/etc/apache2/sites-available/{}.conf'.format(
     GNOCCHI_WEBSERVER_SITE)
@@ -213,6 +214,7 @@ class GnocchiCharm(GnochiCharmBase):
     restart_map = {
         GNOCCHI_CONF: services,
         GNOCCHI_WSGI_CONF: ['apache2'],
+        GNOCCHI_API_PASTE: ['apache2'],
         CEPH_CONF: services,
     }
 
