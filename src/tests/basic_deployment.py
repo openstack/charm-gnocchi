@@ -35,7 +35,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     no_origin = ['memcached', 'percona-cluster', 'rabbitmq-server',
                  'ceph-mon', 'ceph-osd']
 
-    def __init__(self, series, openstack=None, source=None, stable=False,
+    def __init__(self, series, openstack=None, source=None, stable=True,
                  snap_source=None):
         """Deploy the entire test environment."""
         super(GnocchiCharmDeployment, self).__init__(series, openstack,
