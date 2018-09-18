@@ -32,6 +32,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
     """Amulet tests on a basic gnocchi deployment."""
 
     gnocchi_svcs = ['haproxy', 'gnocchi-metricd', 'apache2']
+    gnocchi_proc_names = gnocchi_svcs
     no_origin = ['memcached', 'percona-cluster', 'rabbitmq-server',
                  'ceph-mon', 'ceph-osd']
 
@@ -192,6 +193,24 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         assert(self.gnocchi.status.get() != [])
         u.log.debug('OK')
 
+    def _assert_services(self, should_run):
+        services = self.gnocchi_proc_names
+        u.get_unit_process_ids(
+            {self.gnocchi_sentry: services},
+            expect_success=should_run)
+
+    def test_910_pause_and_resume(self):
+        """The services can be paused and resumed. """
+        self._assert_services(should_run=True)
+        action_id = u.run_action(self.gnocchi_sentry, "pause")
+        assert u.wait_on_action(action_id), "Pause action failed."
+
+        self._assert_services(should_run=False)
+
+        action_id = u.run_action(self.gnocchi_sentry, "resume")
+        assert u.wait_on_action(action_id), "Resume action failed"
+        self._assert_services(should_run=True)
+
 
 class GnocchiCharmSnapDeployment(GnocchiCharmDeployment):
     """Amulet tests on a snap based gnocchi deployment."""
@@ -199,3 +218,5 @@ class GnocchiCharmSnapDeployment(GnocchiCharmDeployment):
     gnocchi_svcs = ['haproxy', 'snap.gnocchi.metricd',
                     'snap.gnocchi.uwsgi',
                     'snap.gnocchi.nginx']
+
+    gnocchi_proc_names = ['haproxy', 'gnocchi-metricd', 'uwsgi', 'nginx']
