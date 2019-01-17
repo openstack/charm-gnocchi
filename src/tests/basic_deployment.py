@@ -48,10 +48,16 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self._deploy()
 
         u.log.info('Waiting on extended status checks...')
-        exclude_services = ['mysql', 'mongodb', 'memcached']
-        self._auto_wait_for_status(exclude_services=exclude_services)
+        self.exclude_services = ['mysql', 'mongodb', 'memcached']
+        if self._get_openstack_release() >= self.xenial_pike:
+            # Ceilometer will come up blocked until the ceilometer-upgrade
+            # action is run
+            self.exclude_services.append("ceilometer")
+        self._auto_wait_for_status(exclude_services=self.exclude_services)
 
         self._initialize_tests()
+        if self._get_openstack_release() >= self.xenial_pike:
+            self.run_ceilometer_upgrade_action()
 
     def _add_services(self):
         """Add services
@@ -109,6 +115,9 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         gnocchi_config = {}
         if self.snap_source:
             gnocchi_config['openstack-origin'] = self.snap_source
+        elif self.series == 'bionic' and self.openstack is None:
+            # pending release of LP: #1813582
+            gnocchi_config['openstack-origin'] = 'distro-proposed'
         configs = {'keystone': keystone_config,
                    'gnocchi': gnocchi_config}
         super(GnocchiCharmDeployment, self)._configure_services(configs)
@@ -122,6 +131,7 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
         self.gnocchi_sentry = self.d.sentry['gnocchi'][0]
         self.mysql_sentry = self.d.sentry['percona-cluster'][0]
         self.keystone_sentry = self.d.sentry['keystone'][0]
+        self.ceil_sentry = self.d.sentry['ceilometer'][0]
 
         # Authenticate admin with keystone endpoint
         self.keystone_session, self.keystone = u.get_default_keystone_session(
@@ -171,6 +181,23 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
             elif data[u"status"] == "failed":
                 return False
             time.sleep(2)
+
+    def run_ceilometer_upgrade_action(self):
+        """Run ceilometer-upgrade
+
+        This action will be run early to initialize ceilometer
+        when gnocchi is related.
+        Ceilometer will be in a blocked state until this runs.
+        """
+        u.log.debug('Checking ceilometer-upgrade')
+        unit = self.ceil_sentry
+
+        action_id = unit.run_action("ceilometer-upgrade")
+        assert u.wait_on_action(action_id), "ceilometer-upgrade action failed"
+        # Wait for acivte Unit is ready on ceilometer
+        self.exclude_services.remove('ceilometer')
+        self._auto_wait_for_status(exclude_services=self.exclude_services)
+        u.log.debug('OK')
 
     def test_100_services(self):
         """Verify the expected services are running on the corresponding
