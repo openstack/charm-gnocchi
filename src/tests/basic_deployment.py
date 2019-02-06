@@ -49,15 +49,13 @@ class GnocchiCharmDeployment(amulet_deployment.OpenStackAmuletDeployment):
 
         u.log.info('Waiting on extended status checks...')
         self.exclude_services = ['mysql', 'mongodb', 'memcached']
-        if self._get_openstack_release() >= self.xenial_pike:
-            # Ceilometer will come up blocked until the ceilometer-upgrade
-            # action is run
-            self.exclude_services.append("ceilometer")
+        # Ceilometer will come up blocked until the ceilometer-upgrade
+        # action is run
+        self.exclude_services.append("ceilometer")
         self._auto_wait_for_status(exclude_services=self.exclude_services)
 
         self._initialize_tests()
-        if self._get_openstack_release() >= self.xenial_pike:
-            self.run_ceilometer_upgrade_action()
+        self.run_ceilometer_upgrade_action()
 
     def _add_services(self):
         """Add services
