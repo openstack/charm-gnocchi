@@ -224,7 +224,7 @@ class GnocchiCharm(GnochiCharmBase):
         'gnocchi-common': collections.OrderedDict([
             ('2', 'mitaka'),
             ('3', 'pike'),
-            ('4', 'rocky'),
+            ('4', 'stein'),
         ]),
     }
 
