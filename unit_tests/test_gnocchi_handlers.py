@@ -114,29 +114,17 @@ class TestHandlers(test_utils.PatchHelper):
             'mygnocchi',
         )
 
-    @mock.patch.object(handlers, 'os')
-    @mock.patch.object(handlers, 'hookenv')
-    @mock.patch.object(handlers, 'ceph_helper')
-    def test_configure_ceph(self, mock_ceph_helper, mock_hookenv, mock_os):
+    def test_configure_ceph(self):
         mock_ceph = mock.MagicMock()
         mock_ceph.key.return_value = 'testkey'
-        mock_hookenv.service_name.return_value = 'gnocchi'
         handlers.configure_ceph(mock_ceph)
-        mock_ceph_helper.ensure_ceph_keyring.assert_called_once_with(
-            service='gnocchi',
-            key='testkey',
-            user='gnocchi',
-            group='gnocchi'
-        )
+        self.gnocchi_charm.configure_ceph_keyring.assert_called_once_with(
+            'testkey')
         mock_ceph.key.assert_called_once_with()
 
-    @mock.patch.object(handlers, 'hookenv')
-    @mock.patch.object(handlers, 'ceph_helper')
-    def test_storage_ceph_disconnected(self, mock_ceph_helper,
-                                       mock_hookenv):
-        mock_hookenv.service_name.return_value = 'gnocchi'
+    def test_storage_ceph_disconnected(self):
         handlers.storage_ceph_disconnected()
-        mock_ceph_helper.delete_keyring.assert_called_once_with('gnocchi')
+        self.gnocchi_charm.delete_ceph_keyring.assert_called_once_with()
 
     @mock.patch.object(handlers.reactive.flags, 'is_flag_set')
     def test_provide_gnocchi_url(self, mock_is_flag_set):

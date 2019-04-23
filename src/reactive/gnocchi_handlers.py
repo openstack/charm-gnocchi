@@ -12,16 +12,12 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-import os
-
 import charms_openstack.charm as charm
 import charms.reactive as reactive
 
 import charm.openstack.gnocchi as gnocchi  # noqa
 
-import charmhelpers.contrib.storage.linux.ceph as ceph_helper
 import charmhelpers.core.hookenv as hookenv
-import charmhelpers.core.host as host
 
 charm.use_defaults(
     'charm.installed',
@@ -85,22 +81,14 @@ def storage_ceph_connected(ceph):
 
 @reactive.when('storage-ceph.available')
 def configure_ceph(ceph):
-    with charm.provide_charm_instance() as charm_class:
-        # TODO(jamespage): refactor to avoid massaging helper
-        ceph_helper.KEYRING = charm_class.ceph_keyring
-        host.mkdir(os.path.dirname(charm_class.ceph_keyring))
-        ceph_helper.ensure_ceph_keyring(service=hookenv.service_name(),
-                                        key=ceph.key(),
-                                        user=charm_class.gnocchi_user,
-                                        group=charm_class.gnocchi_group)
+    with charm.provide_charm_instance() as charm_instance:
+        charm_instance.configure_ceph_keyring(ceph.key())
 
 
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
-    with charm.provide_charm_instance() as charm_class:
-        # TODO(jamespage): refactor to avoid massaging helper
-        ceph_helper.KEYRING = charm_class.ceph_keyring
-        ceph_helper.delete_keyring(hookenv.service_name())
+    with charm.provide_charm_instance() as charm_instance:
+        charm_instance.delete_ceph_keyring()
 
 
 @reactive.when('metric-service.connected')

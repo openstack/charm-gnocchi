@@ -23,6 +23,7 @@ import charmhelpers.core.host as host
 import charms_openstack.charm
 import charms_openstack.adapters as adapters
 import charms_openstack.ip as os_ip
+import charms_openstack.plugins
 
 
 GNOCCHI_DIR = '/etc/gnocchi'
@@ -75,28 +76,6 @@ def ceph_config(config):
         return CEPH_CONF
 
 
-# TODO(jamespage): charms.openstack
-class StorageCephRelationAdapter(adapters.OpenStackRelationAdapter):
-
-    """
-    Adapter for the CephClientRequires relation interface.
-    """
-
-    interface_type = "ceph-client"
-
-    @property
-    def monitors(self):
-        """
-        Comma separated list of hosts that should be used
-        to access Ceph.
-        """
-        hosts = sorted(self.relation.mon_hosts())
-        if len(hosts) > 0:
-            return ','.join(hosts)
-        else:
-            return None
-
-
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
     """
@@ -104,14 +83,15 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
     """
 
     relation_adapters = {
-        'storage_ceph': StorageCephRelationAdapter,
+        'storage_ceph': charms_openstack.plugins.CephRelationAdapter,
         'shared_db': adapters.DatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
         'coordinator_memcached': adapters.MemcacheRelationAdapter,
     }
 
 
-class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm):
+class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm,
+                      charms_openstack.plugins.BaseOpenStackCephCharm):
 
     """
     Base class for shared charm functions for all package types
