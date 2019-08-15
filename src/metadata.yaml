@@ -12,8 +12,8 @@ tags:
 series:
   - xenial
   - bionic
-  - cosmic
   - disco
+  - eoan
 provides:
   metric-service:
     interface: gnocchi
