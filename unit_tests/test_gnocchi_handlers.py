@@ -30,10 +30,10 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             'shared-db.connected',
             'ha.connected',
             'identity-service.connected',
-            'identity-service.available',
             'config.changed',
             'update-status',
-            'charm.default-select-release']
+            'charm.default-select-release',
+            'certificates.available']
         hook_set = {
             'when': {
                 'render_config': (

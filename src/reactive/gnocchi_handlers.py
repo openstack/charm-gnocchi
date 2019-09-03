@@ -23,9 +23,10 @@ charm.use_defaults(
     'charm.installed',
     'shared-db.connected',
     'identity-service.connected',
-    'identity-service.available',  # enables SSL support
     'config.changed',
-    'update-status')
+    'update-status',
+    'certificates.available',
+)
 
 required_interfaces = ['coordinator-memcached.available',
                        'shared-db.available',
