@@ -73,6 +73,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'init_db': (
                     'db.synced',
                 ),
+                'storage_ceph_connected': (
+                    'ceph.create_pool.req.sent',
+                ),
             },
         }
         # test that the hooks were registered via the

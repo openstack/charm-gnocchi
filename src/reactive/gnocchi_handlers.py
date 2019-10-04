@@ -75,9 +75,11 @@ def cluster_connected(hacluster):
         charm_class.assess_status()
 
 
+@reactive.when_not('ceph.create_pool.req.sent')
 @reactive.when('storage-ceph.connected')
 def storage_ceph_connected(ceph):
     ceph.create_pool(hookenv.service_name())
+    reactive.set_state('ceph.create_pool.req.sent')
 
 
 @reactive.when('storage-ceph.available')
