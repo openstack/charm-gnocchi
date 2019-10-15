@@ -22,3 +22,7 @@ existing OpenStack cloud (which includes ceilometer):
 After re-configuration the Ceilometer API will be disabled - the Gnocchi REST
 API should be used to query information on resource, metrics and associated
 measures.
+
+Gnocchi then needs to be initialized with the current ceilometer data:
+
+    juju run-action <ceilometer unit leader> ceilometer-upgrade
