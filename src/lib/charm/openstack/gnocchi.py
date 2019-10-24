@@ -76,6 +76,25 @@ def ceph_config(config):
         return CEPH_CONF
 
 
+class GnocchiCharmDatabaseRelationAdapter(adapters.DatabaseRelationAdapter):
+    """
+    Overrides default class to add binary_prefix option to solve
+    'Invalid utf8 character' warnings
+    """
+
+    def get_uri(self, prefix=None):
+        uri = super(GnocchiCharmDatabaseRelationAdapter, self).get_uri(prefix)
+        release = ch_utils.get_os_codename_install_source(
+            self.config['openstack-origin'])
+        if (ch_utils.OPENSTACK_RELEASES.index(release) >=
+                ch_utils.OPENSTACK_RELEASES.index('rocky')):
+            if '?' in uri:
+                uri += '&binary_prefix=true'
+            else:
+                uri += '?binary_prefix=true'
+        return uri
+
+
 class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
     """
@@ -84,7 +103,7 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
 
     relation_adapters = {
         'storage_ceph': charms_openstack.plugins.CephRelationAdapter,
-        'shared_db': adapters.DatabaseRelationAdapter,
+        'shared_db': GnocchiCharmDatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
         'coordinator_memcached': adapters.MemcacheRelationAdapter,
     }
