@@ -59,6 +59,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'storage_ceph_connected': (
                     'storage-ceph.connected',
                 ),
+                'check_ceph_request_status': (
+                    'storage-ceph.connected',
+                ),
             },
             'when_not': {
                 'storage_ceph_disconnected': (
@@ -75,6 +78,9 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 ),
                 'storage_ceph_connected': (
                     'ceph.create_pool.req.sent',
+                ),
+                'check_ceph_request_status': (
+                    'storage-ceph.pools.available',
                 ),
             },
         }
