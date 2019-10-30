@@ -88,6 +88,12 @@ def configure_ceph(ceph):
         charm_instance.configure_ceph_keyring(ceph.key())
 
 
+@reactive.when_not('storage-ceph.pools.available')
+@reactive.when('storage-ceph.connected')
+def check_ceph_request_status(ceph):
+    ceph.changed()
+
+
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
     with charm.provide_charm_instance() as charm_instance:
