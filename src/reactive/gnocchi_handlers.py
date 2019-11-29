@@ -24,6 +24,7 @@ charm.use_defaults(
     'shared-db.connected',
     'identity-service.connected',
     'config.changed',
+    'config.rendered',
     'update-status',
     'certificates.available',
 )
@@ -34,12 +35,6 @@ required_interfaces = ['coordinator-memcached.available',
                        'storage-ceph.pools.available']
 
 
-@reactive.when_not_all(*required_interfaces)
-def disable_services():
-    with charm.provide_charm_instance() as charm_class:
-        charm_class.disable_services()
-
-
 @reactive.when(*required_interfaces)
 def render_config(*args):
     """Render the configuration for charm when all the interfaces are
@@ -48,10 +43,8 @@ def render_config(*args):
     with charm.provide_charm_instance() as charm_class:
         charm_class.upgrade_if_available(args)
         charm_class.configure_ssl()
-        charm_class.enable_services()
         charm_class.render_with_interfaces(args)
         charm_class.enable_webserver_site()
-        charm_class.assess_status()
     hookenv.log("Configuration rendered", hookenv.DEBUG)
     reactive.set_state('config.rendered')
 

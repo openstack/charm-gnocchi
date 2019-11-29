@@ -31,6 +31,7 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             'ha.connected',
             'identity-service.connected',
             'config.changed',
+            'config.rendered',
             'update-status',
             'charm.default-select-release',
             'certificates.available']
@@ -67,9 +68,6 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'storage_ceph_disconnected': (
                     'storage-ceph.connected',
                 ),
-                'disable_services': (
-                    'config.rendered',
-                ),
                 'cluster_connected': (
                     'ha.available',
                 ),
@@ -103,12 +101,13 @@ class TestHandlers(test_utils.PatchHelper):
         self.provide_charm_instance().__exit__.return_value = None
 
     def test_render_stuff(self):
+        self.patch_object(handlers.reactive, 'set_state')
         handlers.render_config('arg1', 'arg2')
         self.gnocchi_charm.render_with_interfaces.assert_called_once_with(
             ('arg1', 'arg2')
         )
-        self.gnocchi_charm.assess_status.assert_called_once_with()
         self.gnocchi_charm.enable_webserver_site.assert_called_once_with()
+        self.set_state.assert_called_once_with('config.rendered')
 
     def test_init_db(self):
         handlers.init_db()
