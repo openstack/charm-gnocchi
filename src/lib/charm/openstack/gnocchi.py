@@ -87,7 +87,7 @@ class GnocchiCharmDatabaseRelationAdapter(adapters.DatabaseRelationAdapter):
         release = ch_utils.get_os_codename_install_source(
             self.config['openstack-origin'])
         if (ch_utils.OPENSTACK_RELEASES.index(release) >=
-                ch_utils.OPENSTACK_RELEASES.index('rocky')):
+                ch_utils.OPENSTACK_RELEASES.index('queens')):
             if '?' in uri:
                 uri += '&binary_prefix=true'
             else:
