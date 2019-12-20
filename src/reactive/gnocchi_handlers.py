@@ -111,3 +111,9 @@ def provide_gnocchi_url(metric_service):
         hookenv.log("Providing gnocchi URL: {}"
                     .format(charm_class.public_url), hookenv.DEBUG)
         metric_service.set_gnocchi_url(charm_class.public_url)
+
+
+@reactive.when_not('storage-ceph.connected')
+@reactive.when_not('storage-ceph.pools.available')
+def reset_state_create_pool_req_sent():
+    reactive.remove_state('ceph.create_pool.req.sent')

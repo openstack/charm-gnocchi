@@ -80,6 +80,10 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'check_ceph_request_status': (
                     'storage-ceph.pools.available',
                 ),
+                'reset_state_create_pool_req_sent': (
+                    'storage-ceph.connected',
+                    'storage-ceph.pools.available',
+                ),
             },
         }
         # test that the hooks were registered via the
@@ -160,3 +164,8 @@ class TestHandlers(test_utils.PatchHelper):
         mock_gnocchi.set_gnocchi_url.assert_called_once_with(
             "http://gnocchi:8041"
         )
+
+    def test_reset_state_create_pool_req_sent(self):
+        self.patch_object(handlers.reactive, 'remove_state')
+        handlers.reset_state_create_pool_req_sent()
+        self.remove_state.assert_called_once_with('ceph.create_pool.req.sent')
