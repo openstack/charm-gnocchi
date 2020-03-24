@@ -27,6 +27,7 @@ charm.use_defaults(
     'config.rendered',
     'update-status',
     'certificates.available',
+    'cluster.available',
 )
 
 required_interfaces = ['coordinator-memcached.available',
