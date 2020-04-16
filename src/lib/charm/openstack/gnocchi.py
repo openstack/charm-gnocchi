@@ -251,6 +251,8 @@ class GnocchiQueensCharm(GnocchiCharm):
 
     release = 'queens'
 
+    python_version = 3
+
     packages = ['gnocchi-api', 'gnocchi-metricd', 'python3-apt',
                 'ceph-common', 'python3-rados', 'python3-keystonemiddleware',
                 'python3-memcache']
