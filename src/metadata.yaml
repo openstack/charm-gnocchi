@@ -8,12 +8,13 @@ description: |
   metrics at a very large scale while providing access to
   metrics and resources information and history.
 tags:
-  - openstack
+- openstack
 series:
-  - xenial
-  - bionic
-  - eoan
-  - focal
+- xenial
+- bionic
+- eoan
+- focal
+- groovy
 provides:
   metric-service:
     interface: gnocchi
