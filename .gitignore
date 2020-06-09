@@ -11,3 +11,5 @@ test-charm/
 **/__pycache__
 interfaces
 layers
+.idea
+.history

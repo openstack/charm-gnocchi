@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import mock
 import sys
 
 sys.path.append('src')
@@ -38,5 +39,9 @@ def mock_more_stuff():
         charmhelpers.contrib.storage.linux.ceph
     )
 
+boto3 = mock.MagicMock()
+botocore = mock.MagicMock()
+sys.modules['boto3'] = boto3
+sys.modules['botocore'] = botocore
 
 mock_more_stuff()

@@ -19,6 +19,7 @@ import subprocess
 import charmhelpers.contrib.openstack.utils as ch_utils
 import charmhelpers.contrib.network.ip as ch_ip
 import charmhelpers.core.host as host
+import charmhelpers.core.hookenv as hookenv
 
 import charms_openstack.charm
 import charms_openstack.adapters as adapters
@@ -95,12 +96,11 @@ class GnocchiCharmDatabaseRelationAdapter(adapters.DatabaseRelationAdapter):
         return uri
 
 
-class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
+class GnocchiCharmRelationAdapters(adapters.OpenStackAPIRelationAdapters):
 
     """
     Adapters collection to append specific adapters for Gnocchi
     """
-
     relation_adapters = {
         'storage_ceph': charms_openstack.plugins.CephRelationAdapter,
         'shared_db': GnocchiCharmDatabaseRelationAdapter,
@@ -109,8 +109,8 @@ class GnocchiCharmRelationAdapaters(adapters.OpenStackAPIRelationAdapters):
     }
 
 
-class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm,
-                      charms_openstack.plugins.BaseOpenStackCephCharm):
+class GnocchiCharmBase(charms_openstack.charm.HAOpenStackCharm,
+                       charms_openstack.plugins.BaseOpenStackCephCharm):
 
     """
     Base class for shared charm functions for all package types
@@ -132,12 +132,9 @@ class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm,
         }
     }
 
-    required_relations = ['shared-db', 'identity-service',
-                          'storage-ceph', 'coordinator-memcached']
-
     ha_resources = ['vips', 'haproxy', 'dnsha']
 
-    adapters_class = GnocchiCharmRelationAdapaters
+    adapters_class = GnocchiCharmRelationAdapters
 
     def enable_webserver_site(self):
         """Enable Gnocchi Webserver sites if rendered or installed"""
@@ -148,6 +145,26 @@ class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm,
             'database': 'gnocchi',
             'username': 'gnocchi',
             'hostname': ch_ip.get_relation_ip(DB_INTERFACE)}, ]
+
+    @property
+    def required_relations(self):
+        _required_relations = ['shared-db',
+                               'identity-service',
+                               'coordinator-memcached']
+        if self.options.storage_backend == 'ceph':
+            _required_relations.append('storage-ceph')
+        return _required_relations
+
+    @property
+    def mandatory_config(self):
+        _mandatory_config = []
+        if self.options.storage_backend == 's3':
+            s3_config = ['s3-region-name',
+                         's3-endpoint-url',
+                         's3-access-key-id',
+                         's3-secret-access-key']
+            _mandatory_config.extend(s3_config)
+        return _mandatory_config
 
     @property
     def gnocchi_user(self):
@@ -180,8 +197,75 @@ class GnochiCharmBase(charms_openstack.charm.HAOpenStackCharm,
         except KeyError:
             return CEPH_KEYRING
 
+    def db_sync(self):
+        """Override db_sync to catch exceptions for the s3 backend.
+        Perform a database sync using the command defined in the
+        self.sync_cmd attribute. The services defined in self.services are
+        restarted after the database sync.
+        """
+        if not self.db_sync_done() and hookenv.is_leader():
+            try:
+                f = open("/var/log/gnocchi/gnocchi-upgrade.log", "w+")
+                subprocess.check_call(self.sync_cmd,
+                                      stdout=f,
+                                      stderr=subprocess.STDOUT)
+                hookenv.leader_set({'db-sync-done': True})
+                # Restart services immediately after db sync as
+                # render_domain_config needs a working system
+                self.restart_all()
+            except subprocess.CalledProcessError as e:
+                hookenv.status_set('blocked', 'An error occured while ' +
+                                   'running gnocchi-upgrade. Logs available ' +
+                                   'in /var/log/gnocchi/gnocchi-upgrade.log')
+                hookenv.log(e, hookenv.DEBUG)
+                raise e
 
-class GnocchiCharm(GnochiCharmBase):
+    def do_openstack_upgrade_db_migration(self):
+        """Overrides do_openstack_upgrade_db_migration for Openstack
+        upgrades. This function's purpose is to run a database migration
+        after the Openstack upgrade. A check of the S3 connection is
+        required first to avoid a failed migration, in the case of an S3
+        storage backend.
+        :returns: None
+        """
+        self.db_sync()
+
+    def states_to_check(self, required_relations=None):
+        """Custom states to check function.
+
+        Construct a custom set of connected and available states for each
+        of the relations passed, along with error messages and new status
+        conditions.
+
+        :param self: Self
+        :type self: GnocchiCharm instance
+        :param required_relations: List of relations which overrides
+                                   self.relations
+        :type required_relations: list of strings
+        :returns: {relation: [(state, err_status, err_msg), (...),]}
+        :rtype: dict
+        """
+        states_to_check = super().states_to_check(required_relations)
+        states_to_check["gnocchi-upgrade"] = [
+            ("gnocchi-storage-configuration.ready",
+             "blocked",
+             "Mandatory S3 configuration parameters missing."),
+            ("gnocchi-storage-authentication.ready",
+             "blocked",
+             "Authentication to the storage backend failed. " +
+             "Please verify your S3 credentials."),
+            ("gnocchi-storage-network.ready",
+             "blocked",
+             "Could not connect to the storage backend endpoint URL. " +
+             "Please verify your network and your s3 endpoint URL."),
+            ("gnocchi-upgrade.ready",
+             "error",
+             "Storage backend not ready. Check logs for troubleshooting.")
+        ]
+        return states_to_check
+
+
+class GnocchiCharm(GnocchiCharmBase):
 
     """
     Charm for Juju deployment of Gnocchi
@@ -196,7 +280,7 @@ class GnocchiCharm(GnochiCharmBase):
     # List of packages to install for this charm
     packages = ['gnocchi-api', 'gnocchi-metricd', 'python-apt',
                 'ceph-common', 'python-rados', 'python-keystonemiddleware',
-                'apache2', 'libapache2-mod-wsgi']
+                'apache2', 'libapache2-mod-wsgi', 'python-boto3']
 
     services = ['gnocchi-metricd', 'apache2']
 
@@ -255,10 +339,10 @@ class GnocchiQueensCharm(GnocchiCharm):
 
     packages = ['gnocchi-api', 'gnocchi-metricd', 'python3-apt',
                 'ceph-common', 'python3-rados', 'python3-keystonemiddleware',
-                'python3-memcache']
+                'python3-memcache', 'python3-boto3']
 
 
-class GnocchiSnapCharm(GnochiCharmBase):
+class GnocchiSnapCharm(GnocchiCharmBase):
 
     """
     Charm for Juju deployment of Gnocchi via Snap

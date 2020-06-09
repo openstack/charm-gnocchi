@@ -19,7 +19,8 @@ provides:
   metric-service:
     interface: gnocchi
 requires:
-  storage-ceph:
-    interface: ceph-client
   coordinator-memcached:
     interface: memcache
+  storage-ceph:
+    interface: ceph-client
+    optional: True

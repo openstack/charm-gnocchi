@@ -15,6 +15,9 @@
 import charms_openstack.charm as charm
 import charms.reactive as reactive
 
+import boto3
+import botocore
+
 import charm.openstack.gnocchi as gnocchi  # noqa
 
 import charmhelpers.core.hookenv as hookenv
@@ -32,15 +35,85 @@ charm.use_defaults(
 
 required_interfaces = ['coordinator-memcached.available',
                        'shared-db.available',
-                       'identity-service.available',
-                       'storage-ceph.pools.available']
+                       'identity-service.available']
+
+if hookenv.config('storage-backend').lower() == 'ceph':
+    required_interfaces.append('storage-ceph.pools.available')
 
 
+storage_config = ['config.changed.storage-backend',
+                  'config.changed.s3-endpoint-url',
+                  'config.changed.s3-region-name',
+                  'config.changed.s3-access-key-id',
+                  'config.changed.s3-secret-access-key']
+
+
+@reactive.when_any(*storage_config)
+def storage_backend_connection():
+    """Test the connection to the S3 backend provided."""
+    reactive.clear_flag('gnocchi-upgrade.ready')
+    reactive.clear_flag('storage-ceph.needed')
+    reactive.set_flag('gnocchi-storage-configuration.ready')
+    reactive.set_flag('gnocchi-storage-authentication.ready')
+    reactive.set_flag('gnocchi-storage-network.ready')
+
+    with charm.provide_charm_instance() as charm_class:
+        if charm_class.options.storage_backend == 's3':
+            kwargs = {
+                'region_name': charm_class.options.s3_region_name,
+                'aws_access_key_id': charm_class.options.s3_access_key_id,
+                'aws_secret_access_key':
+                    charm_class.options.s3_secret_access_key,
+                'endpoint_url': charm_class.options.s3_endpoint_url,
+            }
+            for value in kwargs.values():
+                if not value:
+                    hookenv.log('Mandatory S3 configuration parameters ' +
+                                'missing.', hookenv.DEBUG)
+                    reactive.clear_flag('gnocchi-storage-configuration.ready')
+                    return
+
+            try:
+                boto3.client('s3', **kwargs)
+                hookenv.log('S3 successfully reachable.', hookenv.DEBUG)
+                reactive.set_flag('gnocchi-upgrade.ready')
+
+            except botocore.exceptions.ClientError as e:
+                hookenv.log("Authentication to S3 backend failed. Error : " +
+                            "{}".format(e), hookenv.DEBUG)
+                reactive.clear_flag('gnocchi-storage-authentication.ready')
+                return
+            except botocore.exceptions.EndpointConnectionError as e:
+                hookenv.log("Could not connect to the endpoint URL: Error : " +
+                            "{}".format(e), hookenv.DEBUG)
+                reactive.clear_flag('gnocchi-storage-network.ready')
+                return
+            except botocore.exceptions.SSLError as e:
+                # this status check does not check for ssl validation
+                reactive.set_flag('gnocchi-upgrade.ready')
+                return
+            except Exception as e:
+                hookenv.log("An error occured when trying to reach the S3 " +
+                            "backend: {}".format(e), hookenv.DEBUG)
+                return
+        elif charm_class.options.storage_backend == 'ceph':
+            reactive.set_flag('storage-ceph.needed')
+            reactive.set_flag('gnocchi-upgrade.ready')
+            return
+        else:
+            reactive.set_flag('gnocchi-upgrade.ready')
+
+
+@reactive.when('gnocchi-upgrade.ready')
 @reactive.when(*required_interfaces)
 def render_config(*args):
     """Render the configuration for charm when all the interfaces are
     available.
+
+    Note that the storage-ceph interface is optional and thus is only
+    used if it is available.
     """
+
     with charm.provide_charm_instance() as charm_class:
         charm_class.upgrade_if_available(args)
         charm_class.configure_ssl()
@@ -50,12 +123,13 @@ def render_config(*args):
     reactive.set_state('config.rendered')
 
 
-# db_sync checks if sync has been done so rerunning is a noop
+# db_sync checks if sync has been done so rerunning is a noop.
 @reactive.when('config.rendered')
 @reactive.when_not('db.synced')
 def init_db():
     with charm.provide_charm_instance() as charm_class:
         charm_class.db_sync()
+        charm_class.assess_status()
     hookenv.log("Database synced", hookenv.DEBUG)
     reactive.set_state('db.synced')
 
@@ -92,6 +166,7 @@ def check_ceph_request_status(ceph):
     ceph.changed()
 
 
+@reactive.when('storage-ceph.needed')
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
     with charm.provide_charm_instance() as charm_instance:
@@ -118,6 +193,7 @@ def provide_gnocchi_url(metric_service):
         metric_service.set_gnocchi_url(charm_class.public_url)
 
 
+@reactive.when('storage-ceph.needed')
 @reactive.when_not('storage-ceph.connected')
 @reactive.when_not('storage-ceph.pools.available')
 def reset_state_create_pool_req_sent():
