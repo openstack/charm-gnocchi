@@ -37,11 +37,14 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
             'certificates.available']
         hook_set = {
             'when': {
+                'define_storage_states': (
+                    'config.changed.storage-backend',
+                ),
                 'render_config': (
                     'coordinator-memcached.available',
                     'shared-db.available',
                     'identity-service.available',
-                    'storage-ceph.pools.available',
+                    'gnocchi-upgrade.ready',
                 ),
                 'init_db': (
                     'config.rendered',
@@ -63,6 +66,12 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 'check_ceph_request_status': (
                     'storage-ceph.connected',
                 ),
+                'storage_ceph_disconnected': (
+                    'storage-ceph.needed',
+                ),
+                'reset_state_create_pool_req_sent': (
+                    'storage-ceph.needed',
+                )
             },
             'when_not': {
                 'storage_ceph_disconnected': (
@@ -106,6 +115,8 @@ class TestHandlers(test_utils.PatchHelper):
 
     def test_render_stuff(self):
         self.patch_object(handlers.reactive, 'set_state')
+        self.patch_object(handlers.charm, 'optional_interfaces')
+
         handlers.render_config('arg1', 'arg2')
         self.gnocchi_charm.render_with_interfaces.assert_called_once_with(
             ('arg1', 'arg2')

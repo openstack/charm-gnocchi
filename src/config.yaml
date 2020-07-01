@@ -1,0 +1,43 @@
+options:
+  storage-backend:
+    type: string
+    default: ceph
+    description: |
+      Storage backend to use for Gnocchi. Valid options are ceph or s3.
+  s3-endpoint-url:
+    type: string
+    default:
+    description: |
+      When using a S3 storage backend, user must provide the endpoint URL.
+  s3-region-name:
+    type: string
+    default:
+    description: |
+      When using a S3 storage backend, user must provide the S3 region name.
+  s3-access-key-id:
+    type: string
+    default:
+    description: |
+      When using a S3 storage backend, user must provide the S3 access key ID.
+  s3-secret-access-key:
+    type: string
+    default:
+    description: |
+      When using a S3 storage backend, user must provide the S3 secret access key.
+  s3-bucket-prefix:
+    type: string
+    default: "gnocchi"
+    description: |
+      When using a S3 storage backend, user must provide the prefix to namespace metric bucket.
+  s3-check-consistency-timeout:
+    type: int
+    default: 60
+    description: |
+      Maximum time to wait checking data consistency when writing to S3. Set to 0 to
+      disable data consistency validation. (floating point value). Minimum value: 0
+  s3-max-pool-connections:
+    type: int
+    default: 50
+    description: |
+      The maximum number of connections to keep in a connection pool. (integer value).
+      Minimum value: 1

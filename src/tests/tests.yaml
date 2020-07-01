@@ -10,21 +10,41 @@ gate_bundles:
   - bionic-train
   - bionic-ussuri
   - focal-ussuri
+  - test-s3: bionic-stein-s3
+  - test-s3: bionic-train-s3
+  - test-s3: bionic-ussuri-s3
+  - test-s3: focal-ussuri-s3
 smoke_bundles:
   - bionic-train
+  - test-s3: bionic-train-s3
 dev_bundles:
   - eoan-train
-tests:
-  - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
+  - test-s3: eoan-train-s3
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
+  - test-s3:
+    - zaza.openstack.charm_tests.vault.setup.auto_initialize
+    - zaza.openstack.charm_tests.gnocchi.setup.configure_s3_backend
+    - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
+tests:
+  - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
+  - test-s3:
+    - zaza.openstack.charm_tests.gnocchi.tests.GnocchiS3Test
+    - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
 target_deploy_status:
+  vault:
+    workload-status: blocked
+    workload-status-message: Vault needs to be initialized
   ceilometer:
     workload-status: blocked
-    workload-status-message: Run the ceilometer-upgrade action on the leader to initialize ceilometer and gnocchi
+    workload-status-message: ''
   mongodb:
     workload-status: unknown
     workload-status-message: ''
+  gnocchi:
+    workload-status: blocked
+    workload-status-message: Mandatory S3 configuration parameters missing.
 tests_options:
   force_deploy:
     - focal-ussuri
+    - focal-ussuri-s3

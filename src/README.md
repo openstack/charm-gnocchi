@@ -26,3 +26,14 @@ measures.
 Gnocchi then needs to be initialized with the current ceilometer data:
 
     juju run-action <ceilometer unit leader> ceilometer-upgrade
+
+# Usage with S3 storage backend
+
+> **Note**: S3 storage support for Gnocchi is available starting with OpenStack
+  Stein.
+
+Gnocchi is configured to be deployed by default with Ceph, however,
+it can also connect to an S3 storage backend. To configure Gnocchi with S3,
+configuration options (`storage-backend`, `s3-region-name`, `s3-endpoint-url`,
+`s3-access-key-id` and `s3-secret-access-key`) must be provided.
+Please take a look at `config.yaml` for more details.
