@@ -37,3 +37,31 @@ it can also connect to an S3 storage backend. To configure Gnocchi with S3,
 configuration options (`storage-backend`, `s3-region-name`, `s3-endpoint-url`,
 `s3-access-key-id` and `s3-secret-access-key`) must be provided.
 Please take a look at `config.yaml` for more details.
+
+## Policy Overrides
+
+Policy overrides is an **advanced** feature that allows an operator to override
+the default policy of an OpenStack service. The policies that the service
+supports, the defaults it implements in its code, and the defaults that a charm
+may include should all be clearly understood before proceeding.
+
+> **Caution**: It is possible to break the system (for tenants and other
+  services) if policies are incorrectly applied to the service.
+
+Policy statements are placed in a YAML file. This file (or files) is then (ZIP)
+compressed into a single file and used as an application resource. The override
+is then enabled via a Boolean charm option.
+
+Here are the essential commands (filenames are arbitrary):
+
+    zip overrides.zip override-file.yaml
+    juju attach-resource gnocchi policyd-override=overrides.zip
+    juju config gnocchi use-policyd-override=true
+
+See appendix [Policy Overrides][cdg-appendix-n] in the [OpenStack Charms
+Deployment Guide][cdg] for a thorough treatment of this feature.
+
+<!-- LINKS -->
+
+[cdg]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide
+[cdg-appendix-n]: https://docs.openstack.org/project-deploy-guide/charm-deployment-guide/latest/app-policy-overrides.html

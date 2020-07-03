@@ -24,3 +24,8 @@ requires:
   storage-ceph:
     interface: ceph-client
     optional: True
+resources:
+  policyd-override:
+    type: file
+    filename: policyd-override.zip
+    description: The policy.d overrides file

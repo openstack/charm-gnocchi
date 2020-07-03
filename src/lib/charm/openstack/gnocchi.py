@@ -109,7 +109,8 @@ class GnocchiCharmRelationAdapters(adapters.OpenStackAPIRelationAdapters):
     }
 
 
-class GnocchiCharmBase(charms_openstack.charm.HAOpenStackCharm,
+class GnocchiCharmBase(charms_openstack.plugins.PolicydOverridePlugin,
+                       charms_openstack.charm.HAOpenStackCharm,
                        charms_openstack.plugins.BaseOpenStackCephCharm):
 
     """
@@ -135,6 +136,9 @@ class GnocchiCharmBase(charms_openstack.charm.HAOpenStackCharm,
     ha_resources = ['vips', 'haproxy', 'dnsha']
 
     adapters_class = GnocchiCharmRelationAdapters
+
+    # policyd override constants
+    policyd_service_name = 'gnocchi'
 
     def enable_webserver_site(self):
         """Enable Gnocchi Webserver sites if rendered or installed"""
