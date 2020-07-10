@@ -19,7 +19,11 @@ smoke_bundles:
   - test-s3: bionic-train-s3
 dev_bundles:
   - eoan-train
+  - focal-victoria
+  - groovy-victoria
   - test-s3: eoan-train-s3
+  - test-s3: focal-victoria-s3
+  - test-s3: groovy-victoria-s3
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
@@ -46,5 +50,5 @@ target_deploy_status:
     workload-status-message: Mandatory S3 configuration parameters missing.
 tests_options:
   force_deploy:
-    - focal-ussuri
-    - focal-ussuri-s3
+    - groovy-victoria
+    - groovy-victoria-s3
