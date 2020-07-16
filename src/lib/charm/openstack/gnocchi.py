@@ -86,7 +86,7 @@ class GnocchiCharmDatabaseRelationAdapter(adapters.DatabaseRelationAdapter):
     def get_uri(self, prefix=None):
         uri = super(GnocchiCharmDatabaseRelationAdapter, self).get_uri(prefix)
         release = ch_utils.get_os_codename_install_source(
-            self.config['openstack-origin'])
+            self.charm_instance.options.openstack_origin)
         if (ch_utils.OPENSTACK_RELEASES.index(release) >=
                 ch_utils.OPENSTACK_RELEASES.index('queens')):
             if '?' in uri:
