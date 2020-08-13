@@ -28,12 +28,12 @@ machines:
 applications:
 
   keystone-mysql-router:
-    charm: cs:~openstack-charmers-next/mysql-router
+    charm: cs:~openstack-charmers/mysql-router
   gnocchi-mysql-router:
-    charm: cs:~openstack-charmers-next/mysql-router
+    charm: cs:~openstack-charmers/mysql-router
 
   mysql-innodb-cluster:
-    charm: cs:~openstack-charmers-next/mysql-innodb-cluster
+    charm: cs:~openstack-charmers/mysql-innodb-cluster
     num_units: 3
     options:
       source: *openstack-origin
@@ -43,7 +43,7 @@ applications:
       - '2'
 
   rabbitmq-server:
-    charm: cs:~openstack-charmers-next/rabbitmq-server
+    charm: cs:~openstack-charmers/rabbitmq-server
     num_units: 1
     options:
       source: *openstack-origin
@@ -51,7 +51,7 @@ applications:
       - '3'
 
   keystone:
-    charm: cs:~openstack-charmers-next/keystone
+    charm: cs:~openstack-charmers/keystone
     num_units: 1
     options:
       openstack-origin: *openstack-origin
@@ -59,7 +59,7 @@ applications:
       - '4'
 
   ceilometer:
-    charm: cs:~openstack-charmers-next/ceilometer
+    charm: cs:~openstack-charmers/ceilometer
     num_units: 1
     options:
       openstack-origin: *openstack-origin
@@ -67,7 +67,7 @@ applications:
       - '5'
 
   ceph-osd:
-    charm: cs:~openstack-charmers-next/ceph-osd
+    charm: cs:~openstack-charmers/ceph-osd
     num_units: 3
     storage:
       osd-devices: 'cinder,10G'
@@ -79,7 +79,7 @@ applications:
       - '8'
 
   ceph-mon:
-    charm: cs:~openstack-charmers-next/ceph-mon
+    charm: cs:~openstack-charmers/ceph-mon
     num_units: 3
     options:
       expected-osd-count: 3
