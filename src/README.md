@@ -51,6 +51,9 @@ set accordingly:
 * `s3-access-key-id`
 * `s3-secret-access-key`
 
+For an encrypted S3 endpoint that is not managed by charmed Vault, the config
+option `trusted-ssl-ca-cert` needs to be configured.
+
 See file `config.yaml` for more details on the above options.
 
 ## Policy overrides

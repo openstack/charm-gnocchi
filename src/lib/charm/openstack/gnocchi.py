@@ -12,6 +12,7 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
+import base64
 import os
 import collections
 import subprocess
@@ -55,6 +56,8 @@ CEPH_KEYRING = '/etc/ceph/ceph.client.{}.keyring'
 CEPH_KEYRING_SNAP = '{}{}'.format(SNAP_PREFIX, CEPH_KEYRING)
 
 DB_INTERFACE = 'shared-db'
+
+EXTERNAL_CA_CERT_FILE = '/usr/local/share/ca-certificates/gnocchi-external.crt'
 
 charms_openstack.charm.use_defaults('charm.default-select-package-type')
 charms_openstack.charm.use_defaults('charm.default-select-release')
@@ -267,6 +270,29 @@ class GnocchiCharmBase(charms_openstack.plugins.PolicydOverridePlugin,
              "Storage backend not ready. Check logs for troubleshooting.")
         ]
         return states_to_check
+
+    def configure_external_tls(self):
+        """Installs an external root CA to the gnocchi units, if provided.
+        The purpose of this is to allow connection to an external S3 endpoint
+        with encryption.
+        :returns: None
+        """
+        if self.options.trusted_external_ca_cert:
+            ca_cert = self.options.trusted_external_ca_cert.strip()
+            hookenv.log("Writing tls ca cert {}".format(ca_cert), hookenv.INFO)
+            cert_content = base64.b64decode(ca_cert).decode()
+            try:
+                with open(EXTERNAL_CA_CERT_FILE, 'w') as fd:
+                    fd.write(cert_content)
+                subprocess.call(['/usr/sbin/update-ca-certificates'])
+            except (subprocess.CalledProcessError, PermissionError) as error:
+                hookenv.status_set(
+                    'blocked',
+                    'An error occured while uploading the external ca cert.'
+                )
+                hookenv.log('configure_external_ssl failed: {}'.format(error),
+                            hookenv.ERROR)
+                return
 
 
 class GnocchiCharm(GnocchiCharmBase):

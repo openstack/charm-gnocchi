@@ -41,6 +41,12 @@ options:
     description: |
       The maximum number of connections to keep in a connection pool. (integer value).
       Minimum value: 1
+  trusted-external-ca-cert:
+    type: string
+    default:
+    description: |
+      Base 64 encoded SSL CA certificate to use for an encrypted S3 endpoint.
+      To be used when the S3 certificates are not managed by charmed Vault.
   use-policyd-override:
     type: boolean
     default: False
