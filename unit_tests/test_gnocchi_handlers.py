@@ -71,22 +71,40 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 )
             },
             'when_not': {
+                'storage_backend_connection': (
+                    'is-update-status-hook',
+                ),
+                'render_config': (
+                    'is-update-status-hook',
+                ),
                 'storage_ceph_disconnected': (
+                    'is-update-status-hook',
                     'storage-ceph.connected',
                 ),
                 'cluster_connected': (
                     'ha.available',
+                    'is-update-status-hook',
                 ),
                 'init_db': (
                     'db.synced',
+                    'is-update-status-hook',
                 ),
                 'storage_ceph_connected': (
                     'ceph.create_pool.req.sent',
+                    'is-update-status-hook',
+                ),
+                'configure_ceph': (
+                    'is-update-status-hook',
+                ),
+                'provide_gnocchi_url': (
+                    'is-update-status-hook',
                 ),
                 'check_ceph_request_status': (
+                    'is-update-status-hook',
                     'storage-ceph.pools.available',
                 ),
                 'reset_state_create_pool_req_sent': (
+                    'is-update-status-hook',
                     'storage-ceph.connected',
                     'storage-ceph.pools.available',
                 ),

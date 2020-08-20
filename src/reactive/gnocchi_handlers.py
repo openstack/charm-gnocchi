@@ -48,6 +48,7 @@ storage_config = ['config.changed.storage-backend',
                   'config.changed.s3-secret-access-key']
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when_any(*storage_config)
 def storage_backend_connection():
     """Test the connection to the S3 backend provided."""
@@ -104,6 +105,7 @@ def storage_backend_connection():
             reactive.set_flag('gnocchi-upgrade.ready')
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('gnocchi-upgrade.ready')
 @reactive.when(*required_interfaces)
 def render_config(*args):
@@ -124,6 +126,7 @@ def render_config(*args):
 
 
 # db_sync checks if sync has been done so rerunning is a noop.
+@reactive.when_not('is-update-status-hook')
 @reactive.when('config.rendered')
 @reactive.when_not('db.synced')
 def init_db():
@@ -134,6 +137,7 @@ def init_db():
     reactive.set_state('db.synced')
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('ha.connected')
 @reactive.when_not('ha.available')
 def cluster_connected(hacluster):
@@ -143,6 +147,7 @@ def cluster_connected(hacluster):
         charm_class.assess_status()
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when_not('ceph.create_pool.req.sent')
 @reactive.when('storage-ceph.connected')
 def storage_ceph_connected(ceph):
@@ -150,6 +155,7 @@ def storage_ceph_connected(ceph):
     reactive.set_state('ceph.create_pool.req.sent')
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('storage-ceph.available')
 def configure_ceph(ceph):
     with charm.provide_charm_instance() as charm_instance:
@@ -160,12 +166,14 @@ def configure_ceph(ceph):
             hookenv.log("No ceph keyring data is available")
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when_not('storage-ceph.pools.available')
 @reactive.when('storage-ceph.connected')
 def check_ceph_request_status(ceph):
     ceph.changed()
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('storage-ceph.needed')
 @reactive.when_not('storage-ceph.connected')
 def storage_ceph_disconnected():
@@ -173,6 +181,7 @@ def storage_ceph_disconnected():
         charm_instance.delete_ceph_keyring()
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('metric-service.connected')
 @reactive.when('config.rendered')
 @reactive.when('db.synced')
@@ -193,6 +202,7 @@ def provide_gnocchi_url(metric_service):
         metric_service.set_gnocchi_url(charm_class.public_url)
 
 
+@reactive.when_not('is-update-status-hook')
 @reactive.when('storage-ceph.needed')
 @reactive.when_not('storage-ceph.connected')
 @reactive.when_not('storage-ceph.pools.available')
