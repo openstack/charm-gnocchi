@@ -160,7 +160,7 @@ def storage_ceph_connected(ceph):
 @reactive.when('storage-ceph.available')
 def configure_ceph(ceph):
     with charm.provide_charm_instance() as charm_instance:
-        key = ceph.key()
+        key = ceph.key
         if key and isinstance(key, str):
             charm_instance.configure_ceph_keyring(key)
         else:

@@ -154,11 +154,10 @@ class TestHandlers(test_utils.PatchHelper):
 
     def test_configure_ceph(self):
         mock_ceph = mock.MagicMock()
-        mock_ceph.key.return_value = 'testkey'
+        mock_ceph.key = 'testkey'
         handlers.configure_ceph(mock_ceph)
         self.gnocchi_charm.configure_ceph_keyring.assert_called_once_with(
             'testkey')
-        mock_ceph.key.assert_called_once_with()
 
     def test_storage_ceph_disconnected(self):
         handlers.storage_ceph_disconnected()
