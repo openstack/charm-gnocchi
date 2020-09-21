@@ -39,6 +39,7 @@ def mock_more_stuff():
         charmhelpers.contrib.storage.linux.ceph
     )
 
+
 boto3 = mock.MagicMock()
 botocore = mock.MagicMock()
 sys.modules['boto3'] = boto3

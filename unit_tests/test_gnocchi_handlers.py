@@ -90,7 +90,6 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                     'is-update-status-hook',
                 ),
                 'storage_ceph_connected': (
-                    'ceph.create_pool.req.sent',
                     'is-update-status-hook',
                 ),
                 'configure_ceph': (
@@ -101,11 +100,6 @@ class TestRegisteredHooks(test_utils.TestRegisteredHooks):
                 ),
                 'check_ceph_request_status': (
                     'is-update-status-hook',
-                    'storage-ceph.pools.available',
-                ),
-                'reset_state_create_pool_req_sent': (
-                    'is-update-status-hook',
-                    'storage-ceph.connected',
                     'storage-ceph.pools.available',
                 ),
             },
@@ -143,14 +137,13 @@ class TestHandlers(test_utils.PatchHelper):
         handlers.init_db()
         self.gnocchi_charm.db_sync.assert_called_once_with()
 
-    @mock.patch.object(handlers, 'hookenv')
-    def test_storage_ceph_connected(self, hookenv):
-        mock_ceph = mock.MagicMock()
-        hookenv.service_name.return_value = 'mygnocchi'
-        handlers.storage_ceph_connected(mock_ceph)
-        mock_ceph.create_pool.assert_called_once_with(
-            'mygnocchi',
-        )
+    def test_storage_ceph_connected(self):
+        self.patch_object(handlers.reactive, 'endpoint_from_flag')
+        handlers.storage_ceph_connected()
+        self.endpoint_from_flag.assert_called_once_with(
+            'storage-ceph.connected')
+        self.gnocchi_charm.create_pool.assert_called_once_with(
+            self.endpoint_from_flag())
 
     def test_configure_ceph(self):
         mock_ceph = mock.MagicMock()
@@ -189,8 +182,3 @@ class TestHandlers(test_utils.PatchHelper):
         mock_gnocchi.set_gnocchi_url.assert_called_once_with(
             "http://gnocchi:8041"
         )
-
-    def test_reset_state_create_pool_req_sent(self):
-        self.patch_object(handlers.reactive, 'remove_state')
-        handlers.reset_state_create_pool_req_sent()
-        self.remove_state.assert_called_once_with('ceph.create_pool.req.sent')
