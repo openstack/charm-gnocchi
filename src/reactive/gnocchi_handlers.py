@@ -89,7 +89,7 @@ def storage_backend_connection():
                             "{}".format(e), hookenv.DEBUG)
                 reactive.clear_flag('gnocchi-storage-network.ready')
                 return
-            except botocore.exceptions.SSLError as e:
+            except botocore.exceptions.SSLError:
                 # this status check does not check for ssl validation
                 reactive.set_flag('gnocchi-upgrade.ready')
                 return

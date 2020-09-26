@@ -15,8 +15,10 @@
 import mock
 import sys
 
+
 sys.path.append('src')
 sys.path.append('src/lib')
+
 
 # Mock out charmhelpers so that we can test without it.
 import charms_openstack.test_mocks  # noqa
@@ -38,6 +40,7 @@ def mock_more_stuff():
     sys.modules['charmhelpers.contrib.storage.linux.ceph'] = (
         charmhelpers.contrib.storage.linux.ceph
     )
+
 
 boto3 = mock.MagicMock()
 botocore = mock.MagicMock()
