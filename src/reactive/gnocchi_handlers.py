@@ -149,11 +149,11 @@ def cluster_connected(hacluster):
 
 
 @reactive.when_not('is-update-status-hook')
-@reactive.when_not('ceph.create_pool.req.sent')
 @reactive.when('storage-ceph.connected')
-def storage_ceph_connected(ceph):
-    ceph.create_pool(hookenv.service_name())
-    reactive.set_state('ceph.create_pool.req.sent')
+def storage_ceph_connected():
+    storage_ceph = reactive.endpoint_from_flag('storage-ceph.connected')
+    with charm.provide_charm_instance() as charm_instance:
+        charm_instance.create_pool(storage_ceph)
 
 
 @reactive.when_not('is-update-status-hook')
@@ -201,11 +201,3 @@ def provide_gnocchi_url(metric_service):
         hookenv.log("Providing gnocchi URL: {}"
                     .format(charm_class.public_url), hookenv.DEBUG)
         metric_service.set_gnocchi_url(charm_class.public_url)
-
-
-@reactive.when_not('is-update-status-hook')
-@reactive.when('storage-ceph.needed')
-@reactive.when_not('storage-ceph.connected')
-@reactive.when_not('storage-ceph.pools.available')
-def reset_state_create_pool_req_sent():
-    reactive.remove_state('ceph.create_pool.req.sent')

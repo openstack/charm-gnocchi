@@ -17,8 +17,7 @@ gate_bundles:
   - test-s3: focal-ussuri-s3
   - test-s3: focal-victoria-s3
 smoke_bundles:
-  - bionic-train
-  - test-s3: bionic-train-s3
+  - focal-ussuri
 dev_bundles:
   - eoan-train
   - groovy-victoria
@@ -33,6 +32,7 @@ configure:
 tests:
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
+  - zaza.openstack.charm_tests.ceph.tests.BlueStoreCompressionCharmOperation
   - test-s3:
     - zaza.openstack.charm_tests.gnocchi.tests.GnocchiS3Test
     - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
