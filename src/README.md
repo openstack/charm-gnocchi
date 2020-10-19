@@ -13,6 +13,19 @@ See file `config.yaml` for the full list of configuration options, along with
 their descriptions and default values. See the [Juju
 documentation][juju-docs-config-apps] for details on configuring applications.
 
+## Ceph BlueStore compression
+
+This charm supports [BlueStore inline compression][ceph-bluestore-compression]
+for its associated Ceph storage pool(s). The feature is enabled by assigning a
+compression mode via the `bluestore-compression-mode` configuration option. The
+default behaviour is to disable compression.
+
+The efficiency of compression depends heavily on what type of data is stored
+in the pool and the charm provides a set of configuration options to fine tune
+the compression behaviour.
+
+> **Note**: BlueStore compression is supported starting with Ceph Mimic.
+
 ## Deployment
 
 Gnocchi is typically deployed as part of an OpenStack cloud, providing storage
@@ -93,3 +106,4 @@ For general charm questions refer to the [OpenStack Charm Guide][cg].
 [juju-docs-config-apps]: https://juju.is/docs/configuring-applications
 [lp-bugs-charm-gnocchi]: https://bugs.launchpad.net/charm-gnocchi/+filebug
 [gnocchi-upstream]: https://wiki.openstack.org/wiki/Gnocchi
+[ceph-bluestore-compression]: https://docs.ceph.com/en/latest/rados/configuration/bluestore-config-ref/#inline-compression
