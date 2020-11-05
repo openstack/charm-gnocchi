@@ -11,18 +11,18 @@ gate_bundles:
   - bionic-ussuri
   - focal-ussuri
   - focal-victoria
+  - groovy-victoria
   - test-s3: bionic-stein-s3
   - test-s3: bionic-train-s3
   - test-s3: bionic-ussuri-s3
   - test-s3: focal-ussuri-s3
   - test-s3: focal-victoria-s3
+  - test-s3: groovy-victoria-s3
 smoke_bundles:
   - focal-ussuri
 dev_bundles:
   - eoan-train
-  - groovy-victoria
   - test-s3: eoan-train-s3
-  - test-s3: groovy-victoria-s3
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
