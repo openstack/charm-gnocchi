@@ -20,9 +20,6 @@ gate_bundles:
   - test-s3: groovy-victoria-s3
 smoke_bundles:
   - focal-ussuri
-dev_bundles:
-  - eoan-train
-  - test-s3: eoan-train-s3
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
