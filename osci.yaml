@@ -1,0 +1,59 @@
+- project:
+    templates:
+      - charm-unit-jobs
+    check:
+      jobs:
+      - bionic-queens
+      - bionic-stein
+      - bionic-train
+      - bionic-ussuri
+      - focal-ussuri
+      - focal-victoria
+      - groovy-victoria
+      - test-s3-bionic-stein-s3
+      - test-s3-bionic-train-s3
+      - test-s3-bionic-ussuri-s3
+      - test-s3-focal-ussuri-s3
+      - test-s3-focal-victoria-s3
+      - test-s3-groovy-victoria-s3
+    vars:
+      needs_charm_build: true
+      charm_build_name: gnocchi
+
+- job:
+    name: test-s3-bionic-stein-s3
+    parent: func-target
+    dependencies: &smoke-jobs
+      - focal-ussuri
+    vars:
+      tox_extra_args: test-s3:bionic-stein-s3
+- job:
+    name: test-s3-bionic-train-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:bionic-train-s3
+- job:
+    name: test-s3-bionic-ussuri-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:bionic-ussuri-s3
+- job:
+    name: test-s3-focal-ussuri-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:focal-ussuri-s3
+- job:
+    name: test-s3-focal-victoria-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:focal-victoria-s3
+- job:
+    name: test-s3-groovy-victoria-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:groovy-victoria-s3
