@@ -14,6 +14,7 @@ series:
 - bionic
 - focal
 - groovy
+- hirsute
 provides:
   metric-service:
     interface: gnocchi
@@ -22,7 +23,7 @@ requires:
     interface: memcache
   storage-ceph:
     interface: ceph-client
-    optional: True
+    optional: true
 resources:
   policyd-override:
     type: file
