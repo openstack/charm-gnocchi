@@ -7,12 +7,14 @@ gate_bundles:
   - bionic-ussuri
   - focal-ussuri
   - focal-victoria
+  - focal-wallaby
   - groovy-victoria
   - test-s3: bionic-stein-s3
   - test-s3: bionic-train-s3
   - test-s3: bionic-ussuri-s3
   - test-s3: focal-ussuri-s3
   - test-s3: focal-victoria-s3
+  - test-s3: focal-wallaby-s3
   - test-s3: groovy-victoria-s3
 smoke_bundles:
   - focal-ussuri
@@ -21,6 +23,8 @@ dev_bundles:
   - xenial-pike
   - xenial-queens
   - bionic-rocky
+  - hirsute-wallaby
+  - test-s3: hirsute-wallaby-s3
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
@@ -50,5 +54,5 @@ target_deploy_status:
     workload-status-message: Mandatory S3 configuration parameters missing.
 tests_options:
   force_deploy:
-    - groovy-victoria
-    - groovy-victoria-s3
+    - hirsute-wallaby
+    - hirsute-wallaby-s3

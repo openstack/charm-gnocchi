@@ -9,13 +9,17 @@
       - bionic-ussuri
       - focal-ussuri
       - focal-victoria
+      - focal-wallaby
       - groovy-victoria
+      - hirsute-wallaby
       - test-s3-bionic-stein-s3
       - test-s3-bionic-train-s3
       - test-s3-bionic-ussuri-s3
       - test-s3-focal-ussuri-s3
       - test-s3-focal-victoria-s3
+      - test-s3-focal-wallaby-s3
       - test-s3-groovy-victoria-s3
+      - test-s3-hirsute-wallaby-s3
     vars:
       needs_charm_build: true
       charm_build_name: gnocchi
@@ -52,8 +56,20 @@
     vars:
       tox_extra_args: test-s3:focal-victoria-s3
 - job:
+    name: test-s3-focal-wallaby-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:focal-wallaby-s3
+- job:
     name: test-s3-groovy-victoria-s3
     parent: func-target
     dependencies: *smoke-jobs
     vars:
       tox_extra_args: test-s3:groovy-victoria-s3
+- job:
+    name: test-s3-hirsute-wallaby-s3
+    parent: func-target
+    dependencies: *smoke-jobs
+    vars:
+      tox_extra_args: test-s3:hirsute-wallaby-s3
