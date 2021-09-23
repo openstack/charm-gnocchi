@@ -6,15 +6,14 @@ gate_bundles:
   - bionic-train
   - bionic-ussuri
   - focal-ussuri
-  - focal-victoria
   - focal-wallaby
-  - groovy-victoria
+  - focal-xena
   - test-s3: bionic-stein-s3
   - test-s3: bionic-train-s3
   - test-s3: bionic-ussuri-s3
   - test-s3: focal-ussuri-s3
-  - test-s3: focal-victoria-s3
   - test-s3: focal-wallaby-s3
+  - test-s3: focal-xena-s3
   - test-s3: groovy-victoria-s3
 smoke_bundles:
   - focal-ussuri
@@ -23,6 +22,9 @@ dev_bundles:
   - xenial-pike
   - xenial-queens
   - bionic-rocky
+  - focal-victoria
+  - test-s3: focal-victoria-s3
+  - groovy-victoria
   - hirsute-wallaby
   - test-s3: hirsute-wallaby-s3
 configure:
@@ -54,5 +56,6 @@ target_deploy_status:
     workload-status-message: Mandatory S3 configuration parameters missing.
 tests_options:
   force_deploy:
-    - hirsute-wallaby
-    - hirsute-wallaby-s3
+    - groovy-victoria
+    - impish-xena
+    - impish-xena-s3
