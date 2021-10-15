@@ -101,7 +101,7 @@
       "item": "interface:ceph-client",
       "url": "https://opendev.org/openstack/charm-interface-ceph-client.git",
       "vcs": null,
-      "branch": null,
+      "branch": "3ca251fb01a7cd51d2a0ee2b9b66647c8ffe891f",
       "commit": "3ca251fb01a7cd51d2a0ee2b9b66647c8ffe891f"
     },
     {
@@ -172,7 +172,7 @@
       "type": "python_module",
       "package": "botocore",
       "vcs": null,
-      "version": "1.21.58"
+      "version": "1.19.63"
     },
     {
       "type": "python_module",
@@ -184,7 +184,7 @@
       "type": "python_module",
       "package": "s3transfer",
       "vcs": null,
-      "version": "0.5.0"
+      "version": "0.3.6"
     },
     {
       "type": "python_module",
@@ -222,7 +222,7 @@
       "type": "python_module",
       "package": "boto3",
       "vcs": null,
-      "version": "1.18.58"
+      "version": "1.16.63"
     },
     {
       "type": "python_module",
