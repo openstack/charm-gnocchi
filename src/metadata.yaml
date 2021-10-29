@@ -16,6 +16,7 @@ series:
 - groovy
 - hirsute
 - impish
+- jammy
 provides:
   metric-service:
     interface: gnocchi
