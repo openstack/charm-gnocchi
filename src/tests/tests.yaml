@@ -13,9 +13,6 @@ gate_bundles:
 smoke_bundles:
   - focal-ussuri
 dev_bundles:
-  - xenial-ocata
-  - xenial-pike
-  - xenial-queens
   - bionic-rocky
   - test-s3: bionic-train-s3
   - test-s3: focal-yoga-s3
