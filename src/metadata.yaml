@@ -10,10 +10,7 @@ description: |
 tags:
 - openstack
 series:
-- bionic
 - focal
-- groovy
-- hirsute
 - impish
 provides:
   metric-service:

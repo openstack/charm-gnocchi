@@ -1,28 +1,23 @@
 charm_name: gnocchi
 
 gate_bundles:
-  - bionic-queens
-  - test-s3: bionic-stein-s3
-  - test-s3: bionic-ussuri-s3
-  - test-s3: focal-ussuri-s3
-  - test-s3: focal-victoria-s3
-  - test-s3: focal-wallaby-s3
   - test-s3: focal-xena-s3
-  - test-s3: hirsute-wallaby-s3
   - test-s3: impish-xena-s3
+
 smoke_bundles:
-  - focal-ussuri
+  - test-s3: focal-xena-s3
+
 dev_bundles:
-  - bionic-rocky
-  - test-s3: bionic-train-s3
   - test-s3: focal-yoga-s3
   - test-s3: jammy-yoga-s3
+
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
     - zaza.openstack.charm_tests.vault.setup.auto_initialize
     - zaza.openstack.charm_tests.gnocchi.setup.configure_s3_backend
     - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
+
 tests:
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
@@ -31,6 +26,7 @@ tests:
     - zaza.openstack.charm_tests.gnocchi.tests.GnocchiS3Test
     - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
     - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
+
 target_deploy_status:
   vault:
     workload-status: blocked
@@ -44,8 +40,8 @@ target_deploy_status:
   gnocchi:
     workload-status: blocked
     workload-status-message: Mandatory S3 configuration parameters missing.
+
 tests_options:
   force_deploy:
-    - hirsute-wallaby-s3
     - impish-xena-s3
     - jammy-yoga-s3
