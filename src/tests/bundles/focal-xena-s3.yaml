@@ -1,6 +1,8 @@
 variables:
   openstack-origin: &openstack-origin cloud:focal-xena
 
+local_overlay_enabled: False
+
 series: &series focal
 
 machines:
@@ -70,7 +72,7 @@ applications:
     channel: latest/edge
   gnocchi:
     series: *series
-    charm: ../../../gnocchi
+    charm: ../../../gnocchi.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin

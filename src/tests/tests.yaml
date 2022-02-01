@@ -30,16 +30,16 @@ tests:
 target_deploy_status:
   vault:
     workload-status: blocked
-    workload-status-message: Vault needs to be initialized
+    workload-status-message-prefix: Vault needs to be initialized
   ceilometer:
     workload-status: blocked
-    workload-status-message: ''
+    workload-status-message-prefix: ''
   mongodb:
     workload-status: unknown
-    workload-status-message: ''
+    workload-status-message-prefix: ''
   gnocchi:
     workload-status: blocked
-    workload-status-message: Mandatory S3 configuration parameters missing.
+    workload-status-message-prefix: Mandatory S3 configuration parameters missing.
 
 tests_options:
   force_deploy:

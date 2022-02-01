@@ -16,6 +16,7 @@
     vars:
       needs_charm_build: true
       charm_build_name: gnocchi
+      build_type: charmcraft
 
 - job:
     name: test-s3-focal-xena-s3

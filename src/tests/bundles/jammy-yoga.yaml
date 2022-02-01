@@ -1,6 +1,8 @@
 variables:
   openstack-origin: &openstack-origin distro
 
+local_overlay_enabled: False
+
 series: &series jammy
 
 machines:
@@ -100,7 +102,7 @@ applications:
 
   gnocchi:
     series: *series
-    charm: ../../../gnocchi
+    charm: ../../../gnocchi.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin
