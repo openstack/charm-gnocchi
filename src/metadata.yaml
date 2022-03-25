@@ -11,7 +11,7 @@ tags:
 - openstack
 series:
 - focal
-- impish
+- jammy
 provides:
   metric-service:
     interface: gnocchi

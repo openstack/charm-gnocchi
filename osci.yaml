@@ -1,16 +1,14 @@
 - project:
     templates:
       - charm-unit-jobs-py38
-      - charm-unit-jobs-py39
+      - charm-unit-jobs-py310
       - charm-xena-functional-jobs
       - charm-yoga-functional-jobs
     check:
       jobs:
       - test-s3-focal-xena-s3
-      - test-s3-focal-yoga-s3:
-          voting: false
-      - test-s3-impish-xena-s3:
-          voting: false
+      - test-s3-focal-yoga-s3
+      - test-s3-impish-xena-s3
       - test-s3-jammy-yoga-s3:
           voting: false
     vars:
