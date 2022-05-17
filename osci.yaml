@@ -1,95 +1,28 @@
 - project:
     templates:
-      - charm-unit-jobs
+      - charm-unit-jobs-py38
+      - charm-victoria-functional-jobs
+      - charm-wallaby-functional-jobs
     check:
       jobs:
-      - bionic-queens
-      - bionic-stein
-      - bionic-train
-      - bionic-ussuri
-      - focal-ussuri
-      - focal-victoria
-      - focal-wallaby
-      - focal-xena:
-          voting: false
-      - groovy-victoria
-      - hirsute-wallaby
-      - impish-xena:
-          voting: false
-      - test-s3-bionic-stein-s3
-      - test-s3-bionic-train-s3
-      - test-s3-bionic-ussuri-s3
-      - test-s3-focal-ussuri-s3
       - test-s3-focal-victoria-s3
       - test-s3-focal-wallaby-s3
-      - test-s3-focal-xena-s3:
-          voting: false
-      - test-s3-groovy-victoria-s3
-      - test-s3-hirsute-wallaby-s3
-      - test-s3-impish-xena-s3:
-          voting: false
     vars:
       needs_charm_build: true
       charm_build_name: gnocchi
+      build_type: charmcraft
 
-- job:
-    name: test-s3-bionic-stein-s3
-    parent: func-target
-    dependencies: &smoke-jobs
-      - focal-ussuri
-    vars:
-      tox_extra_args: test-s3:bionic-stein-s3
-- job:
-    name: test-s3-bionic-train-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:bionic-train-s3
-- job:
-    name: test-s3-bionic-ussuri-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:bionic-ussuri-s3
-- job:
-    name: test-s3-focal-ussuri-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:focal-ussuri-s3
 - job:
     name: test-s3-focal-victoria-s3
     parent: func-target
-    dependencies: *smoke-jobs
+    dependencies:
+      - focal-victoria
     vars:
       tox_extra_args: test-s3:focal-victoria-s3
 - job:
     name: test-s3-focal-wallaby-s3
     parent: func-target
-    dependencies: *smoke-jobs
+    dependencies:
+      - focal-wallaby
     vars:
       tox_extra_args: test-s3:focal-wallaby-s3
-- job:
-    name: test-s3-focal-xena-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:focal-xena-s3
-- job:
-    name: test-s3-groovy-victoria-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:groovy-victoria-s3
-- job:
-    name: test-s3-hirsute-wallaby-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:hirsute-wallaby-s3
-- job:
-    name: test-s3-impish-xena-s3
-    parent: func-target
-    dependencies: *smoke-jobs
-    vars:
-      tox_extra_args: test-s3:impish-xena-s3
