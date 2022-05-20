@@ -13,3 +13,4 @@ interfaces
 layers
 .idea
 .history
+*.charm
