@@ -10,8 +10,8 @@ description: |
 tags:
 - openstack
 series:
-- focal
 - jammy
+- kinetic
 provides:
   metric-service:
     interface: gnocchi

@@ -1,15 +1,15 @@
 charm_name: gnocchi
 
 gate_bundles:
-  - test-s3: focal-xena-s3
-  - test-s3: impish-xena-s3
+  - test-s3: jammy-yoga-s3
 
 smoke_bundles:
-  - test-s3: focal-xena-s3
+  - test-s3: jammy-yoga-s3
 
 dev_bundles:
-  - test-s3: focal-yoga-s3
   - test-s3: jammy-yoga-s3
+  - test-s3: jammy-zed-s3
+  - test-s3: kinetic-zed-s3
 
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
@@ -43,5 +43,4 @@ target_deploy_status:
 
 tests_options:
   force_deploy:
-    - impish-xena-s3
-    - jammy-yoga-s3
+    - kinetic-zed-s3
