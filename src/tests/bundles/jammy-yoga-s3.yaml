@@ -6,21 +6,20 @@ local_overlay_enabled: False
 series: &series jammy
 
 machines:
-  0:
+  '0':
     constraints: "mem=3072M"
-  1:
+  '1':
     constraints: "mem=3072M"
-  2:
+  '2':
     constraints: "mem=3072M"
-  3: {}
-  4: {}
-  5: {}
-  6: {}
-  7: {}
-  8: {}
-  9: {}
-  10:
-    series: bionic
+  '3': {}
+  '4': {}
+  '5': {}
+  '6': {}
+  '7': {}
+  '8': {}
+  '9': {}
+  '10': {}
 
 # We specify machine placements for these to improve iteration
 # time, given that machine "0" comes up way before machine "6"
@@ -28,13 +27,13 @@ applications:
 
   keystone-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
   gnocchi-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
   vault-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
 
   mysql-innodb-cluster:
     charm: ch:mysql-innodb-cluster
@@ -45,7 +44,7 @@ applications:
       - '0'
       - '1'
       - '2'
-    channel: latest/edge
+    channel: 8.0/edge
   rabbitmq-server:
     charm: ch:rabbitmq-server
     num_units: 1
@@ -53,7 +52,7 @@ applications:
       source: *openstack-origin
     to:
       - '3'
-    channel: latest/edge
+    channel: 3.9/edge
   keystone:
     charm: ch:keystone
     num_units: 1
@@ -61,7 +60,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '4'
-    channel: latest/edge
+    channel: yoga/edge
   ceilometer:
     charm: ch:ceilometer
     num_units: 1
@@ -69,9 +68,8 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '5'
-    channel: latest/edge
+    channel: yoga/edge
   gnocchi:
-    series: *series
     charm: ../../../gnocchi.charm
     num_units: 1
     options:
@@ -79,16 +77,9 @@ applications:
       storage-backend: s3
     to:
       - '6'
-  memcached:
-    charm: ch:memcached
-    num_units: 1
-    # holding at bionic as memcached doesn't support focal/groovy yet
-    series: bionic
-    to:
-      - '10'
   #swift-proxy is used to test gnocchi against an S3 storage backend
   swift-proxy:
-    charm: swift-proxy
+    charm: ch:swift-proxy
     num_units: 1
     options:
       zone-assignment: manual
@@ -107,14 +98,18 @@ applications:
       zone: 1
     to:
       - '8'
-    channel: latest/edge
+    channel: yoga/edge
   vault:
     charm: ch:vault
     num_units: 1
-    series: *series
     to:
       - '9'
-    channel: latest/edge
+    channel: 1.7/edge
+  memcached:
+    charm: ch:memcached
+    num_units: 1
+    to:
+      - '10'
 relations:
   - - keystone:shared-db
     - keystone-mysql-router:shared-db

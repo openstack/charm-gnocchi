@@ -8,9 +8,7 @@
       jobs:
       - test-s3-focal-xena-s3
       - test-s3-focal-yoga-s3
-      - test-s3-impish-xena-s3
-      - test-s3-jammy-yoga-s3:
-          voting: false
+      - test-s3-jammy-yoga-s3
     vars:
       needs_charm_build: true
       charm_build_name: gnocchi
@@ -30,13 +28,6 @@
       - focal-yoga
     vars:
       tox_extra_args: test-s3:focal-yoga-s3
-- job:
-    name: test-s3-impish-xena-s3
-    parent: func-target
-    dependencies:
-      - focal-xena
-    vars:
-      tox_extra_args: test-s3:impish-xena-s3
 - job:
     name: test-s3-jammy-yoga-s3
     parent: func-target
