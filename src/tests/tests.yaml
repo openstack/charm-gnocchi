@@ -2,31 +2,14 @@ charm_name: gnocchi
 
 gate_bundles:
   - bionic-queens
+  - bionic-rocky
   - bionic-stein
   - bionic-train
-  - bionic-ussuri
-  - focal-ussuri
-  - focal-wallaby
-  - focal-xena
   - test-s3: bionic-stein-s3
   - test-s3: bionic-train-s3
-  - test-s3: bionic-ussuri-s3
-  - test-s3: focal-ussuri-s3
-  - test-s3: focal-wallaby-s3
-  - test-s3: focal-xena-s3
-  - test-s3: groovy-victoria-s3
 smoke_bundles:
-  - focal-ussuri
-dev_bundles:
-  - xenial-ocata
-  - xenial-pike
-  - xenial-queens
-  - bionic-rocky
-  - focal-victoria
-  - test-s3: focal-victoria-s3
-  - groovy-victoria
-  - hirsute-wallaby
-  - test-s3: hirsute-wallaby-s3
+  - bionic-train
+dev_bundles: []
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
@@ -55,7 +38,4 @@ target_deploy_status:
     workload-status: blocked
     workload-status-message: Mandatory S3 configuration parameters missing.
 tests_options:
-  force_deploy:
-    - groovy-victoria
-    - impish-xena
-    - impish-xena-s3
+  force_deploy: []
