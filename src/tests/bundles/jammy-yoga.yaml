@@ -31,30 +31,26 @@ applications:
 
   keystone-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
   gnocchi-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
 
   mysql-innodb-cluster:
     charm: ch:mysql-innodb-cluster
     num_units: 3
-    options:
-      source: *openstack-origin
     to:
       - '0'
       - '1'
       - '2'
-    channel: latest/edge
+    channel: 8.0/edge
 
   rabbitmq-server:
     charm: ch:rabbitmq-server
     num_units: 1
-    options:
-      source: *openstack-origin
     to:
       - '3'
-    channel: latest/edge
+    channel: 3.9/edge
 
   keystone:
     charm: ch:keystone
@@ -63,7 +59,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '4'
-    channel: latest/edge
+    channel: zed/edge
 
   ceilometer:
     charm: ch:ceilometer
@@ -72,7 +68,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '5'
-    channel: latest/edge
+    channel: zed/edge
 
   ceph-osd:
     charm: ch:ceph-osd
@@ -85,7 +81,7 @@ applications:
       - '6'
       - '7'
       - '8'
-    channel: latest/edge
+    channel: quincy/edge
 
   ceph-mon:
     charm: ch:ceph-mon
@@ -98,7 +94,7 @@ applications:
       - '9'
       - '10'
       - '11'
-    channel: latest/edge
+    channel: quincy/edge
 
   gnocchi:
     series: *series
