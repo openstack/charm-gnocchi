@@ -12,6 +12,7 @@ tags:
 series:
 - jammy
 - kinetic
+- lunar
 provides:
   metric-service:
     interface: gnocchi

@@ -1,13 +1,15 @@
 - project:
     templates:
       - charm-unit-jobs-py310
-      - charm-zed-functional-jobs
+      - charm-functional-jobs
     check:
       jobs:
-      - test-s3-jammy-yoga-s3
-      - test-s3-jammy-zed-s3:
-          voting: false
+      - test-s3-jammy-zed-s3
       - test-s3-kinetic-zed-s3:
+          voting: false
+      - test-s3-jammy-antelope-s3:
+          voting: false
+      - test-s3-lunar-antelope-s3:
           voting: false
     vars:
       needs_charm_build: true
@@ -15,13 +17,6 @@
       build_type: charmcraft
       charmcraft_channel: 2.1/stable
 
-- job:
-    name: test-s3-jammy-yoga-s3
-    parent: func-target
-    dependencies:
-      - jammy-yoga
-    vars:
-      tox_extra_args: '-- test-s3:jammy-yoga-s3'
 - job:
     name: test-s3-jammy-zed-s3
     parent: func-target
@@ -33,6 +28,20 @@
     name: test-s3-kinetic-zed-s3
     parent: func-target
     dependencies:
-      - kinetic-zed
+      - jammy-zed
     vars:
       tox_extra_args: '-- test-s3:kinetic-zed-s3'
+- job:
+    name: test-s3-jammy-antelope-s3
+    parent: func-target
+    dependencies:
+      - jammy-zed
+    vars:
+      tox_extra_args: '-- test-s3:jammy-antelope-s3'
+- job:
+    name: test-s3-lunar-antelope-s3
+    parent: func-target
+    dependencies:
+      - jammy-zed
+    vars:
+      tox_extra_args: '-- test-s3:lunar-antelope-s3'
