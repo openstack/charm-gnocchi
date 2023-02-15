@@ -121,6 +121,11 @@ class GnocchiCharmBase(charms_openstack.plugins.PolicydOverridePlugin,
     """
     abstract_class = True
 
+    healthcheck = {
+        'option': 'httpchk GET /healthcheck',
+        'http-check': 'expect status 200',
+    }
+
     # Internal name of charm
     service_name = name = 'gnocchi'
 
