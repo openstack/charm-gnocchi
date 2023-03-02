@@ -95,7 +95,7 @@ applications:
     series: *series
     to:
       - '8'
-    channel: 1.7/edge
+    channel: 1.6/edge
 relations:
   - - keystone:shared-db
     - percona-cluster:shared-db
