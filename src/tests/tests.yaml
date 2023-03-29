@@ -8,7 +8,6 @@ smoke_bundles:
 
 dev_bundles:
   - test-s3: jammy-antelope-s3
-  - test-s3: kinetic-zed-s3
   - test-s3: lunar-antelope-s3
 
 configure:
@@ -43,5 +42,4 @@ target_deploy_status:
 
 tests_options:
   force_deploy:
-    - kinetic-zed-s3
     - lunar-antelope-s3

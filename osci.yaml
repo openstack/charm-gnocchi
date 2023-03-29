@@ -5,10 +5,7 @@
     check:
       jobs:
       - test-s3-jammy-zed-s3
-      - test-s3-kinetic-zed-s3:
-          voting: false
-      - test-s3-jammy-antelope-s3:
-          voting: false
+      - test-s3-jammy-antelope-s3
       - test-s3-lunar-antelope-s3:
           voting: false
     vars:
@@ -24,13 +21,6 @@
       - jammy-zed
     vars:
       tox_extra_args: '-- test-s3:jammy-zed-s3'
-- job:
-    name: test-s3-kinetic-zed-s3
-    parent: func-target
-    dependencies:
-      - jammy-zed
-    vars:
-      tox_extra_args: '-- test-s3:kinetic-zed-s3'
 - job:
     name: test-s3-jammy-antelope-s3
     parent: func-target
