@@ -1,9 +1,9 @@
 variables:
-  openstack-origin: &openstack-origin distro
+  openstack-origin: &openstack-origin cloud:jammy-antelope
 
 local_overlay_enabled: False
 
-series: &series kinetic
+series: &series jammy
 
 machines:
   0:
@@ -39,8 +39,6 @@ applications:
   mysql-innodb-cluster:
     charm: ch:mysql-innodb-cluster
     num_units: 3
-    options:
-      source: *openstack-origin
     to:
       - '0'
       - '1'
@@ -49,8 +47,6 @@ applications:
   rabbitmq-server:
     charm: ch:rabbitmq-server
     num_units: 1
-    options:
-      source: *openstack-origin
     to:
       - '3'
     channel: latest/edge
@@ -88,7 +84,7 @@ applications:
       - '10'
   #swift-proxy is used to test gnocchi against an S3 storage backend
   swift-proxy:
-    charm: ch:swift-proxy
+    charm: swift-proxy
     num_units: 1
     options:
       zone-assignment: manual
