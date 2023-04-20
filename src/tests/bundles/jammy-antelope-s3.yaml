@@ -28,13 +28,13 @@ applications:
 
   keystone-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
   gnocchi-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
   vault-mysql-router:
     charm: ch:mysql-router
-    channel: latest/edge
+    channel: 8.0/edge
 
   mysql-innodb-cluster:
     charm: ch:mysql-innodb-cluster
@@ -43,13 +43,13 @@ applications:
       - '0'
       - '1'
       - '2'
-    channel: latest/edge
+    channel: 8.0/edge
   rabbitmq-server:
     charm: ch:rabbitmq-server
     num_units: 1
     to:
       - '3'
-    channel: latest/edge
+    channel: 3.9/edge
   keystone:
     charm: ch:keystone
     num_units: 1
@@ -57,7 +57,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '4'
-    channel: latest/edge
+    channel: 2023.1/edge
   ceilometer:
     charm: ch:ceilometer
     num_units: 1
@@ -65,7 +65,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '5'
-    channel: latest/edge
+    channel: 2023.1/edge
   gnocchi:
     series: *series
     charm: ../../../gnocchi_ubuntu-22.04-amd64_ubuntu-22.10-amd64_ubuntu-23.04-amd64.charm
@@ -93,7 +93,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '7'
-    channel: latest/edge
+    channel: 2023.1/edge
   swift-storage:
     charm: ch:swift-storage
     num_units: 1
@@ -104,14 +104,14 @@ applications:
       zone: 1
     to:
       - '8'
-    channel: latest/edge
+    channel: 2023.1/edge
   vault:
     charm: ch:vault
     num_units: 1
     series: *series
     to:
       - '9'
-    channel: latest/edge
+    channel: 1.8/edge
 relations:
   - - keystone:shared-db
     - keystone-mysql-router:shared-db
