@@ -11,8 +11,8 @@ tags:
 - openstack
 series:
 - jammy
-- kinetic
 - lunar
+- mantic
 provides:
   metric-service:
     interface: gnocchi

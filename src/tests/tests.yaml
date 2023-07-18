@@ -1,14 +1,15 @@
 charm_name: gnocchi
 
 gate_bundles:
-  - test-s3: jammy-zed-s3
+  - test-s3: jammy-antelope-s3
 
 smoke_bundles:
-  - test-s3: jammy-zed-s3
+  - test-s3: jammy-antelope-s3
 
 dev_bundles:
-  - test-s3: jammy-antelope-s3
+  - test-s3: jammy-bobcat-s3
   - test-s3: lunar-antelope-s3
+  - test-s3: mantic-bobcat-s3
 
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
@@ -43,3 +44,4 @@ target_deploy_status:
 tests_options:
   force_deploy:
     - lunar-antelope-s3
+    - mantic-bobcat-s3
