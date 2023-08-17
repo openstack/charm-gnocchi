@@ -261,6 +261,12 @@
       "package": "urllib3",
       "vcs": null,
       "version": "1.26.7"
+    },
+    {
+      "type": "python_module",
+      "package": "Cython",
+      "vcs": null,
+      "version": "0.29.36"
     }
   ]
 }
