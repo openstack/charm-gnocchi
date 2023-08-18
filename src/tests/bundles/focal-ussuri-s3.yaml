@@ -97,6 +97,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '7'
+    channel: ussuri/edge
   swift-storage:
     charm: ch:swift-storage
     num_units: 1
