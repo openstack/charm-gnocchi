@@ -5,8 +5,7 @@
     check:
       jobs:
       - test-s3-jammy-yoga-s3
-      - test-s3-jammy-zed-s3:
-          voting: false
+      - test-s3-jammy-zed-s3
       - test-s3-kinetic-zed-s3:
           voting: false
     vars:
