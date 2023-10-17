@@ -4,10 +4,9 @@
       - charm-functional-jobs
     check:
       jobs:
+      - jammy-antelope
       - test-s3-jammy-antelope-s3
       - test-s3-jammy-bobcat-s3:
-          voting: false
-      - test-s3-lunar-antelope-s3:
           voting: false
       - test-s3-mantic-bobcat-s3:
           voting: false
@@ -15,7 +14,7 @@
       needs_charm_build: true
       charm_build_name: gnocchi
       build_type: charmcraft
-      charmcraft_channel: 2.x/edge
+      charmcraft_channel: 2.x/stable
 
 - job:
     name: test-s3-jammy-antelope-s3
@@ -28,20 +27,13 @@
     name: test-s3-jammy-bobcat-s3
     parent: func-target
     dependencies:
-      - jammy-antelope
+      - jammy-bobcat
     vars:
       tox_extra_args: '-- test-s3:jammy-bobcat-s3'
-- job:
-    name: test-s3-lunar-antelope-s3
-    parent: func-target
-    dependencies:
-      - jammy-antelope
-    vars:
-      tox_extra_args: '-- test-s3:lunar-antelope-s3'
 - job:
     name: test-s3-mantic-bobcat-s3
     parent: func-target
     dependencies:
-      - jammy-antelope
+      - jammy-bobcat
     vars:
       tox_extra_args: '-- test-s3:mantic-bobcat-s3'
