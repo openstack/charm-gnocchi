@@ -1,31 +1,28 @@
 charm_name: gnocchi
 
 gate_bundles:
-  - test-s3: jammy-antelope-s3
-
+  - jammy-antelope
+  - jammy-bobcat
+  - jammy-caracal
 smoke_bundles:
-  - test-s3: jammy-antelope-s3
-
+  - jammy-caracal
 dev_bundles:
-  - test-s3: jammy-bobcat-s3
-  - test-s3: lunar-antelope-s3
-  - test-s3: mantic-bobcat-s3
-
+  - noble-caracal
 configure:
   - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
   - test-s3:
-    - zaza.openstack.charm_tests.vault.setup.auto_initialize
-    - zaza.openstack.charm_tests.gnocchi.setup.configure_s3_backend
-    - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
+      - zaza.openstack.charm_tests.vault.setup.auto_initialize
+      - zaza.openstack.charm_tests.gnocchi.setup.configure_s3_backend
+      - zaza.openstack.charm_tests.ceilometer.setup.basic_setup
 
 tests:
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
   - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
   - zaza.openstack.charm_tests.ceph.tests.BlueStoreCompressionCharmOperation
   - test-s3:
-    - zaza.openstack.charm_tests.gnocchi.tests.GnocchiS3Test
-    - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
-    - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
+      - zaza.openstack.charm_tests.gnocchi.tests.GnocchiS3Test
+      - zaza.openstack.charm_tests.gnocchi.tests.GnocchiTest
+      - zaza.openstack.charm_tests.gnocchi.tests.GnocchiExternalCATest
 
 target_deploy_status:
   vault:
@@ -43,5 +40,4 @@ target_deploy_status:
 
 tests_options:
   force_deploy:
-    - lunar-antelope-s3
-    - mantic-bobcat-s3
+    - noble-caracal
