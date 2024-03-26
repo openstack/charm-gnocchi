@@ -40,6 +40,14 @@ existing OpenStack cloud (which already includes Ceilometer):
     juju add-relation gnocchi:storage-ceph ceph-mon:client
     juju add-relation gnocchi:metric-service ceilometer:metric-service
 
+If you want to use mysql-innodb-cluster rather than percona-cluster, you need
+to add routing middleware to ensure the requests are routed to the correct node.
+Replace the percona-cluster relation with:
+
+    juju deploy --channel 8.0/stable mysql-router gnocchi-mysql-router
+    juju integrate gnocchi-mysql-router:db-router mysql-innodb-cluster:db-router
+    juju integrate gnocchi-mysql-router:shared-db gnocchi:shared-db
+
 The Gnocchi API should now be used to service information queries. As such,
 once re-configuration caused by the above relations has settled, the Ceilometer
 API will be disabled.
