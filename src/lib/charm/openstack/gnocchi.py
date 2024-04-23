@@ -333,6 +333,12 @@ class GnocchiCharm(GnocchiCharmBase):
             ('2', 'mitaka'),
             ('3', 'pike'),
             ('4', 'train'),
+            ('4.3', 'ussuri'),
+            ('4.4.0', 'victoria'),
+            ('4.4.1', 'yoga'),  # wallaby, xena, yoga
+            ('4.4.2', 'zed'),
+            ('4.5.0', 'bobcat'),  # antelope, bobcat
+            ('4.6.0', 'caracal'),
         ]),
     }
 
