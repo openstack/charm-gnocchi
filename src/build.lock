@@ -209,7 +209,7 @@
       "package": "charms.openstack",
       "url": "git+https://github.com/openstack/charms.openstack.git",
       "branch": "stable/ussuri",
-      "version": "10627ee5f991c268f174d6d100e218a0e1867af1",
+      "version": "5089c4d16c349397f7357fd82c8df4127e4f24a3",
       "vcs": "git"
     },
     {
