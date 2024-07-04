@@ -337,7 +337,7 @@
       "package": "charms.openstack",
       "url": "git+https://github.com/openstack/charms.openstack.git",
       "branch": "stable/caracal",
-      "version": "018b72d734223db274b59f524b7887d8153cdb6d",
+      "version": "b956245392babe61f401f09979db07f98e9cb29b",
       "vcs": "git"
     }
   ]
