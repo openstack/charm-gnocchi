@@ -229,7 +229,7 @@
       "package": "charms.openstack",
       "url": "git+https://github.com/openstack/charms.openstack.git",
       "branch": "stable/bobcat",
-      "version": "70f9e32f057938d8ad5e01da20eabb83d3d34847",
+      "version": "442fa364913afcb1acd1f502bd5c980f3f831888",
       "vcs": "git"
     },
     {
