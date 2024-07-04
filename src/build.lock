@@ -209,7 +209,7 @@
       "package": "charms.openstack",
       "url": "git+https://github.com/openstack/charms.openstack.git",
       "branch": "stable/wallaby",
-      "version": "10627ee5f991c268f174d6d100e218a0e1867af1",
+      "version": "e58bad36743ecd1de41258b3c271f2c4c554a093",
       "vcs": "git"
     },
     {
