@@ -9,8 +9,6 @@ description: |
   metrics and resources information and history.
 tags:
   - openstack
-series:
-  - jammy
 provides:
   metric-service:
     interface: gnocchi

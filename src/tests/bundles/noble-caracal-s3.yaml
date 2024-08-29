@@ -20,7 +20,7 @@ machines:
   8: {}
   9: {}
   10:
-    series: focal
+    series: noble
 
 # We specify machine placements for these to improve iteration
 # time, given that machine "0" comes up way before machine "6"
@@ -57,7 +57,7 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '4'
-    channel: 2024.1/edge
+    channel: latest/edge
   ceilometer:
     charm: ch:ceilometer
     num_units: 1
@@ -65,10 +65,10 @@ applications:
       openstack-origin: *openstack-origin
     to:
       - '5'
-    channel: 2024.1/edge
+    channel: latest/edge
   gnocchi:
-    series: *series
-    charm: ../../../gnocchi_ubuntu-22.04-amd64.charm
+    series: noble
+    charm: ../../../gnocchi_amd64.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin
@@ -104,11 +104,11 @@ applications:
       zone: 1
     to:
       - '8'
-    channel: 2024.1/edge
+    channel: latest/edge
   vault:
     charm: ch:vault
     num_units: 1
-    series: *series
+    series: noble
     to:
       - '9'
     channel: latest/edge
