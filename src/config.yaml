@@ -121,5 +121,11 @@ options:
     description: |
       Value of bluestore compression max blob size for solid state media on
       pools requested by this charm.
+  memcached-coordinator-lock-timeout:
+    type: int
+    default: 5
+    description: |
+      Timeout value for coordinator lock heartbeat expiry. Increase this value
+      if the lock is timing out before the heartbeat.
   openstack-origin:
     default: zed
