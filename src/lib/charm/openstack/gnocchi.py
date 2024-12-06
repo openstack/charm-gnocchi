@@ -99,6 +99,20 @@ class GnocchiCharmDatabaseRelationAdapter(adapters.DatabaseRelationAdapter):
         return uri
 
 
+class GnocchiMemcacheRelationAdapter(adapters.MemcacheRelationAdapter):
+    """
+    Adds ability to customize the memcached coordinator lock timeout.
+    """
+
+    @property
+    def url(self):
+        hosts = sorted(self.relation.memcache_hosts())
+        timeout = hookenv.config("memcached-coordinator-lock-timeout")
+        if hosts:
+            return "memcached://{}:11211?timeout={}".format(hosts[0], timeout)
+        return None
+
+
 class GnocchiCharmRelationAdapters(adapters.OpenStackAPIRelationAdapters):
 
     """
@@ -108,7 +122,7 @@ class GnocchiCharmRelationAdapters(adapters.OpenStackAPIRelationAdapters):
         'storage_ceph': charms_openstack.plugins.CephRelationAdapter,
         'shared_db': GnocchiCharmDatabaseRelationAdapter,
         'cluster': adapters.PeerHARelationAdapter,
-        'coordinator_memcached': adapters.MemcacheRelationAdapter,
+        'coordinator_memcached': GnocchiMemcacheRelationAdapter,
     }
 
 
