@@ -128,4 +128,4 @@ options:
       Timeout value for coordinator lock heartbeat expiry. Increase this value
       if the lock is timing out before the heartbeat.
   openstack-origin:
-    default: bobcat
+    default: caracal
