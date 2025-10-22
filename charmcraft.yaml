@@ -2,22 +2,19 @@ type: charm
 
 parts:
   charm:
+    plugin: reactive
+    reactive-charm-build-arguments:
+      - --use-lock-file-branches
+      - --verbose
+    source: src/
+    build-snaps:
+      - charm/2.x/stable
+    build-environment:
+      - CHARM_INTERFACES_DIR: $CRAFT_PROJECT_DIR/interfaces/
+      - CHARM_LAYERS_DIR: $CRAFT_PROJECT_DIR/layers/
     build-packages:
       - git
       - python3-dev
-      - python3-pip
-    override-build: |
-      apt-get install ca-certificates -y
-      pip3 install --user "tox==3.18"
-      ~/.local/bin/tox -e build-reactive
-    override-stage: |
-      echo "Copying charm to staging area: $CHARMCRAFT_STAGE"
-      NAME=$(ls $CHARMCRAFT_PART_BUILD/build/builds)
-      cp -r $CHARMCRAFT_PART_BUILD/build/builds/$NAME/* $CHARMCRAFT_STAGE/
-    override-prime: |
-      # For some reason, the normal priming chokes on the fact that there's a
-      # hooks directory.
-      cp -r $CHARMCRAFT_STAGE/* .
 
 bases:
   - build-on:
