@@ -6,13 +6,11 @@
       jobs:
       - test-s3-jammy-yoga-s3
       - test-s3-jammy-zed-s3
-      - test-s3-kinetic-zed-s3:
-          voting: false
     vars:
       needs_charm_build: true
       charm_build_name: gnocchi
       build_type: charmcraft
-      charmcraft_channel: 2.1/stable
+      charmcraft_channel: 2.x/stable
 
 - job:
     name: test-s3-jammy-yoga-s3
@@ -28,10 +26,3 @@
       - jammy-zed
     vars:
       tox_extra_args: test-s3:jammy-zed-s3
-- job:
-    name: test-s3-kinetic-zed-s3
-    parent: func-target
-    dependencies:
-      - kinetic-zed
-    vars:
-      tox_extra_args: test-s3:kinetic-zed-s3
