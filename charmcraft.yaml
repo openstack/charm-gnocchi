@@ -19,7 +19,7 @@ parts:
       - cargo
     source: src/
     build-snaps:
-      - charm/latest/edge
+      - charm/3.x/stable
     build-environment:
       - CHARM_INTERFACES_DIR: $CRAFT_PROJECT_DIR/interfaces/
       - CHARM_LAYERS_DIR: $CRAFT_PROJECT_DIR/layers/
