@@ -1,10 +1,10 @@
 - project:
     templates:
-      - openstack-python3-charm-jobs
-      - openstack-cover-jobs
+    - openstack-python3-charm-jobs-2024.1
+    - openstack-cover-charm-jobs
     check:
       jobs:
-        - charmbuild
+      - charmbuild
     vars:
       charm_build_name: gnocchi
       charmbuild_charmcraft_channel: 2.x/stable
