@@ -8,9 +8,10 @@ description: |
   metrics at a very large scale while providing access to
   metrics and resources information and history.
 tags:
-  - openstack
+- openstack
 series:
-  - jammy
+- jammy
+- noble
 provides:
   metric-service:
     interface: gnocchi
