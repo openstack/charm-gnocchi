@@ -70,7 +70,7 @@ applications:
       - '5'
     channel: yoga/edge
   gnocchi:
-    charm: ../../../gnocchi.charm
+    charm: ../../../gnocchi_ubuntu@22.04-amd64.charm
     num_units: 1
     options:
       openstack-origin: *openstack-origin
