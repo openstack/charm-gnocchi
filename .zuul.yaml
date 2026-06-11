@@ -7,4 +7,3 @@
         - charmbuild
     vars:
       charm_build_name: gnocchi
-      charmbuild_charmcraft_channel: 2.x/stable
