@@ -23,7 +23,6 @@ machines:
   '11':
   '12':
   '13':
-    series: bionic
 
 # We specify machine placements for these to improve iteration
 # time, given that machine "0" comes up way before machine "6"
@@ -112,8 +111,6 @@ applications:
   memcached:
     charm: ch:memcached
     num_units: 1
-    # holding at bionic as memcached doesn't support focal/groovy yet
-    series: bionic
     to:
       - '13'
 
