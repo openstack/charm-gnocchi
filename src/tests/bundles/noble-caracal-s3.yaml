@@ -111,7 +111,7 @@ applications:
     series: *series
     to:
       - '9'
-    channel: latest/edge
+    channel: 1.8/stable
 relations:
   - - keystone:shared-db
     - keystone-mysql-router:shared-db
